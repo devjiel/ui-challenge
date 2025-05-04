@@ -1,0 +1,14 @@
+---
+// Calendar banner day component
+import DayCard from "@/components/day-card.astro";
+---
+
+<div class="flex flex-row gap-2">
+    <DayCard day="Sunday" date="16" />
+    <DayCard isSelected={true} day="Monday" date="17" />
+    <DayCard day="Tuesday" date="18" />
+    <DayCard day="Wednesday" date="19" />
+    <DayCard day="Thursday" date="20" />
+    <DayCard day="Friday" date="21" />
+    <DayCard day="Saturday" date="22" />
+</div>
