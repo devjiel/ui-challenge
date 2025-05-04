@@ -1,13 +1,14 @@
 ---
 import { ReactToggleGroup } from "@/components/ui/react-toggle-group";
 import CalendarBannerDay from "@/components/calendar-banner-day.astro";
+import DaySelector from "@/components/day-selector.astro";
 ---
 
 <div class="p-6 flex-col">
-    <div class="flex flex-row justify-between">
+    <div class="flex flex-row justify-between items-center">
         <div class="text-2xl font-normal">May, 2025</div>
         <ReactToggleGroup client:load />
-        <div />
+        <DaySelector />
     </div>
     <div class="p-4"></div>
     <div class="flex flex-row justify-center items-center gap-4">
