@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 // Component Imports
-import { Button } from "@/components/ui/button";
 import Sidebar from "@/layouts/sidebar.astro";
 
 // Full Astro Component Syntax:
@@ -17,11 +16,35 @@ import Sidebar from "@/layouts/sidebar.astro";
 		<title>Astro Calendar</title>
 	</head>
 
-	<body>
+	<body class="font-sans">
 		<div class="bg-black flex h-screen p-4">
 			<Sidebar />
 			<div class="p-1"></div>
-			<div class="bg-white flex-1 rounded-3xl"></div>
+			<div class="bg-white p-6 flex-1 rounded-3xl">
+				<div class="flex flex-row">
+					<div class="flex flex-col">
+						<div class="text-2xl font-normal">May, 2025</div>
+						<div class="p-4"></div>
+						<div class="flex flex-row justify-center items-center">
+							<img
+								src="assets/icons/calendar-03.svg"
+								alt="calendar"
+								class="pl-2 pr-6"
+							/>
+							<div class="h-24 w-36 bg-zinc-900 rounded-xl">
+								<div class="flex flex-col items-center justify-center h-full">
+									<div class="text-white text-base font-normal">
+										Monday
+									</div>
+									<div class="text-white text-3xl font-bold">
+										17
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
