@@ -1,0 +1,62 @@
+---
+import "../styles/global.css";
+// Component Imports
+import { Button } from "@/components/ui/button";
+import { AvatarComponent } from "@/components/ui/avatar_component";
+import { Calendar } from "@/components/ui/calendar";
+
+// Full Astro Component Syntax:
+// https://docs.astro.build/basics/astro-components/
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Calendar</title>
+	</head>
+
+	<body>
+		<div class="bg-black flex h-screen p-4">
+			<div class="w-1/5">
+				<div class="bg-zinc-900 rounded-3xl p-4">
+					<div class="flex flex-row">
+						<AvatarComponent
+							client:load
+							src="https://avatars.githubusercontent.com/u/8007905?v=4"
+							alt="@devjiel"
+							fallbackText="JL"
+						/>
+						<div class="p-1.5"></div>
+						<div class="flex flex-col flex-1">
+							<div class="text-white text-sm font-semibold">
+								Jeremy L.
+							</div>
+							<div class="text-gray-400 text-xs">Developer</div>
+						</div>
+						<div
+							class="bg-black rounded-4xl w-10 h-10 flex items-center justify-center"
+						>
+							<img
+								src="assets/icons/calendar.svg"
+								alt="calendar"
+								class="w-4 h-4"
+							/>
+						</div>
+					</div>
+				</div>
+				<div class="p-2"></div>
+				<div class="bg-zinc-900 rounded-3xl p-4">
+					<Calendar
+						mode="single"
+						className="flex flex-row justify-center items-center text-white"
+					/>
+				</div>
+			</div>
+			<div class="p-1"></div>
+			<div class="bg-white flex-1 rounded-3xl"></div>
+		</div>
+	</body>
+</html>
