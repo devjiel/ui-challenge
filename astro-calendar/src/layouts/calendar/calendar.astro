@@ -1,7 +1,27 @@
 ---
 import { Separator } from "@/components/ui/separator";
+
+const generateHours = () => {
+  const result = [];
+  for (let i = 6; i <= 24; i++) {
+    const hour = i > 12 ? i - 12 : i;
+    const period = i >= 12 ? "pm" : "am";
+    result.push({ hour, period });
+  }
+  return result;
+};
+
+const hours = generateHours();
 ---
 
-<div class="h-full flex-col bg-gray-100">
+<div class="flex-1 flex flex-col bg-gray-100 overflow-y-auto">
     <Separator />
+    <div class="py-12 px-4">
+        {hours.map((time) => (
+            <>
+                <div>{time.hour} {time.period}</div>
+                <div class="h-18"></div>
+            </>
+        ))}
+    </div>
 </div>
