@@ -1,0 +1,87 @@
+---
+import EventCard, { type EventColor } from '@/components/event-card.astro';
+
+// Define a type for the event structure
+interface CalendarEvent {
+    id: number;
+    title: string;
+    startTime: string;
+    endTime: string;
+    dayIndex: number;
+    color: EventColor; // Use the imported type here
+    attendees?: string[];
+}
+
+// Dummy event data for now, typed with CalendarEvent
+const events: CalendarEvent[] = [
+  {
+    id: 1,
+    title: 'Booking taxi app',
+    startTime: '06:00',
+    endTime: '07:30',
+    dayIndex: 0,
+    color: 'blue',
+    attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png', '/assets/images/avatar-3.png']
+  },
+  {
+    id: 2,
+    title: 'Design onboarding',
+    startTime: '06:00',
+    endTime: '07:10',
+    dayIndex: 1,
+    color: 'green'
+  },
+    {
+    id: 3,
+    title: 'Development meet',
+    startTime: '08:00',
+    endTime: '09:00', // Adjusted from image for simplicity
+    dayIndex: 1,
+    color: 'purple'
+  },
+  // Add more events based on the screenshot
+];
+
+// Function to calculate grid row based on time (assuming 6 AM start, 60 min intervals)
+const calculateGridRow = (time: string, startHour = 6, interval = 60) => {
+  const [hour, minute] = time.split(':').map(Number);
+  const totalMinutes = (hour * 60 + minute) - (startHour * 60);
+  const row = Math.floor(totalMinutes / interval) + 2;
+  return row;
+};
+
+const calculateRowSpan = (startTime: string, endTime: string, interval = 60) => {
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    const startTotalMinutes = startHour * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+    const durationMinutes = endTotalMinutes - startTotalMinutes;
+    const span = Math.ceil(durationMinutes / interval);
+    return Math.max(1, span);
+}
+
+---
+{events.map(event => {
+    const gridColumnStart = event.dayIndex + 2; // +1 for time col, +1 for 0-based index
+    const gridRowStart = calculateGridRow(event.startTime);
+    const rowSpan = calculateRowSpan(event.startTime, event.endTime);
+
+    const style = `
+        grid-column: ${gridColumnStart};
+        grid-row: ${gridRowStart} / span ${rowSpan};
+        z-index: 10;
+        margin: 1em; 
+        min-height: 0;
+    `;
+
+    return (
+        <EventCard
+            style={style} 
+            title={event.title}
+            startTime={event.startTime}
+            endTime={event.endTime}
+            color={event.color}
+            attendees={event.attendees}
+        />
+    );
+})} 

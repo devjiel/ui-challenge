@@ -1,0 +1,53 @@
+---
+// Placeholder for Event Card display
+import type { HTMLAttributes } from 'astro/types';
+
+export type EventColor = 'blue' | 'green' | 'yellow' | 'purple' | 'pink';
+
+export interface Props extends HTMLAttributes<'div'> {
+  title: string;
+  startTime: string;
+  endTime: string;
+  color: EventColor;
+  attendees?: string[];
+}
+
+const { title, startTime, endTime, color, attendees, ...rest } = Astro.props;
+
+const colorClasses: Record<EventColor, string> = {
+    blue: 'bg-blue-300 border-blue-300 text-blue-800',
+    green: 'bg-green-300 border-green-300 text-green-800',
+    yellow: 'bg-yellow-300 border-yellow-300 text-yellow-800',
+    purple: 'bg-purple-300 border-purple-300 text-purple-800',
+    pink: 'bg-pink-300 border-pink-300 text-pink-800',
+};
+
+const cardColor = colorClasses[color] ?? 'bg-gray-100 border-gray-300 text-gray-800';
+---
+
+<div class:list={["rounded-lg p-2 flex flex-col overflow-hidden h-full", cardColor]} {...rest}>
+    <h4 class="font-normal text-xs leading-tight mb-1 text-ellipsis text-black">{title}</h4>
+    <p class="opacity-80 flex-shrink-0 text-xs text-gray-500">{startTime} - {endTime}</p>
+    {attendees && attendees.length > 0 && (
+        <div class="flex -space-x-2 mt-auto pt-1 flex-shrink-0">
+            {attendees.map((avatar, index) => (
+                <img
+                    class="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-gray-800"
+                    src={avatar}
+                    alt={`Attendee ${index + 1}`}
+                />
+            ))}
+        </div>
+    )}
+</div>
+
+<style>
+    h4 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    div {
+        min-height: 0;
+    }
+</style> 

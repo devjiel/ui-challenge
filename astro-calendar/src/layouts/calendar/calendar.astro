@@ -1,44 +1,107 @@
 ---
 import { Separator } from "@/components/ui/separator";
+import CalendarHeader from "./calendar-header.astro"; // Import header
+import EventGrid from "./event-grid.astro"; // Import placeholder for events
 
-const generateHours = () => {
+const generateHours = (start = 6, end = 24, interval = 60) => {
     const result = [];
-    for (let i = 6; i <= 24; i++) {
-        const hour = i > 12 ? i - 12 : i;
-        const period = i >= 12 ? "pm" : "am";
-        result.push({ hour, period });
+    // Calculate total rows needed based on interval
+    const totalRows = ((end - start) * 60) / interval;
+    for (let i = 0; i < totalRows; i++) {
+        const totalMinutes = start * 60 + i * interval;
+        const hour24 = Math.floor(totalMinutes / 60);
+        const minute = totalMinutes % 60;
+
+        const hour = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+        const period = hour24 >= 12 && hour24 < 24 ? "pm" : "am";
+        // Add grid row number (starting from 2, as header is row 1)
+        result.push({ hour, period, minute, gridRowStart: i + 2 });
     }
     return result;
 };
 
-const hours = generateHours();
+
+// Generate hours for each 60-minute interval (adjust interval for 30min if needed)
+const hours = generateHours(6, 24, 60);
+const gridRowCount = hours.length + 1; // +1 for header row
 ---
 
-<style>
+<style define:vars={{ gridRowCount }}>
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: auto repeat(7, 1fr);
+        grid-template-rows: auto repeat(var(--gridRowCount, 20), 4.5rem);
+        row-gap: 1em;
+        flex: 1;
+        overflow-y: auto;
+        position: relative;
+        padding: 2rem;
+    }
+
+    .time-label {
+        grid-column: 1;
+        text-align: right;
+        padding-right: 1rem; /* Adjust as needed */
+        /* Center vertically within the row span */
+        display: flex;
+        align-items: start;
+        justify-content: flex-end;
+    }
+
+    .header-container {
+         /* Span across all 8 columns */
+        grid-column: 1 / -1;
+        grid-row: 1;
+        position: sticky; /* Keep header visible */
+        top: 0;
+        background-color: white; /* Or your desired background */
+        z-index: 10;
+    }
+
+    .day-header-banner {
+        /* Starts from the second column (after time labels) */
+        grid-column: 2 / -1;
+        grid-row: 1;
+         /* Align with the time slots visually if needed */
+        display: flex;
+        align-items: end; /* Align items to bottom if header has extra space */
+        padding-bottom: 0.5rem; /* Example */
+    }
+
+     .time-separator-container {
+        grid-column: 1; /* Only in the time column */
+        position: relative; /* For absolute positioning the line inside */
+        display: flex;
+        align-items: center; /* Center separator vertically */
+     }
+
+    /* Hide scrollbar styles */
     .hide-scrollbar {
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;     /* Firefox */
     }
-    
     .hide-scrollbar::-webkit-scrollbar {
         display: none;             /* Chrome, Safari and Opera */
     }
 </style>
 
-<div class="flex-1 flex flex-col bg-gray-100 overflow-y-auto hide-scrollbar">
+<div class="flex flex-col flex-1 bg-gray-100 overflow-hidden">
     <Separator />
-    <div class="py-12 px-4">
+    <div class="calendar-grid hide-scrollbar mt-4">
+        
         {
-            hours.map((time) => (
+            hours.map((time, index) => (
                 <>
-                    <div class="flex flex-row items-center">
-                        <span class="whitespace-nowrap">{`${time.hour} ${time.period}`}</span>
-                        <div class="p-4" />
-                        <Separator />
+                    <div class="time-label text-base font-extralight" style={`grid-row: ${time.gridRowStart};`}>
+                        {time.minute === 0 ? `${time.hour} ${time.period}` : ''}
                     </div>
-                    <div class="h-18" />
                 </>
             ))
         }
+
+        <div style={`grid-column: 2 / -1; grid-row: 2 / span ${hours.length}; display: contents;`}>
+            <EventGrid client:load />
+        </div>
+
     </div>
 </div>
