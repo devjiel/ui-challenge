@@ -6,8 +6,8 @@ interface CalendarBannerProps {
   days?: { day: string; date: string }[];
 }
 
-export function CalendarBanner({ 
-  initialSelectedIndex = 1, 
+export function CalendarBanner({
+  initialSelectedIndex = 1,
   days = [
     { day: 'Sunday', date: '16' },
     { day: 'Monday', date: '17' },
@@ -16,12 +16,12 @@ export function CalendarBanner({
     { day: 'Thursday', date: '20' },
     { day: 'Friday', date: '21' },
     { day: 'Saturday', date: '22' }
-  ] 
+  ]
 }: CalendarBannerProps) {
   const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-1 justify-between">
       {days.map((day, index) => (
         <DayCard
           key={index}

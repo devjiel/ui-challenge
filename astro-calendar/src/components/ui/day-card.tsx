@@ -9,8 +9,8 @@ interface DayCardProps {
 
 export function DayCard({ day, date, isSelected = false, onClick }: DayCardProps) {
   return (
-    <div 
-      className={`h-24 w-36 rounded-xl cursor-pointer transition-colors duration-300 ${isSelected ? 'bg-zinc-900' : 'bg-gray-100'}`}
+    <div
+      className={`h-[5vw] min-h-[75px] w-[10vw] min-w-[150px] rounded-xl cursor-pointer transition-colors duration-300 ${isSelected ? 'bg-zinc-900' : 'bg-gray-100'}`}
       onClick={onClick}
     >
       <div className="flex flex-col items-center justify-center h-full">
