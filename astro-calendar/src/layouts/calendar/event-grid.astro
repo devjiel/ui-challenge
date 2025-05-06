@@ -1,18 +1,6 @@
 ---
-import EventCard, { type EventColor } from '@/components/event-card.astro';
-
-// Define a type for the event structure
-interface CalendarEvent {
-    id: number;
-    title: string;
-    startTime: string;
-    endTime: string;
-    dayIndex: number;
-    color: EventColor;
-    attendees?: string[];
-    widthPercent?: number;
-    leftPercent?: number;
-}
+import EventCard from '@/components/event-card.astro';
+import { events } from '@/mocks/event-mock';
 
 // --- Configuration (should match calendar.astro) ---
 const startHour = 6;       // Hour the calendar grid starts
@@ -24,51 +12,6 @@ const rowHeightRem = 4.5;  // Height of a grid row in rem (must match calendar.a
 const remInPixels = 16;
 const rowHeightPx = rowHeightRem * remInPixels;
 const pixelsPerMinute = rowHeightPx / interval;
-
-// Dummy event data
-const events: CalendarEvent[] = [
-  {
-    id: 0,
-    title: 'Running',
-    startTime: '06:00',
-    endTime: '08:00',
-    dayIndex: 0,
-    color: 'yellow',
-    widthPercent: 100,
-    leftPercent: 0,
-  },
-  {
-    id: 1,
-    title: 'Booking taxi app',
-    startTime: '06:00',
-    endTime: '07:30',
-    dayIndex: 1,
-    color: 'blue',
-    attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png', '/assets/images/avatar-3.png'],
-    widthPercent: 50 - 1,
-    leftPercent: 0,
-  },
-  {
-    id: 2,
-    title: 'Design onboarding',
-    startTime: '06:00',
-    endTime: '07:10', // Precise end time
-    dayIndex: 1,
-    color: 'green',
-    widthPercent: 50 - 1,
-    leftPercent: 50  + 1,
-  },
-  {
-    id: 3,
-    title: 'Development meet',
-    startTime: '08:00',
-    endTime: '09:00',
-    dayIndex: 1,
-    color: 'purple',
-    widthPercent: 100,
-    leftPercent: 0,
-  },
-];
 
 // Calculates the starting grid row (still needed for the wrapper)
 const calculateGridRow = (time: string) => {
