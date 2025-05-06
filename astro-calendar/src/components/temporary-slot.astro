@@ -1,0 +1,84 @@
+---
+export type Props = {
+    id: string;
+};
+const { id } = Astro.props;
+
+// The color is hardcoded to grey as per the user's last manual change.
+// If this needs to be dynamic, it could be passed as a prop or CSS variable.
+const color = '#808080'; 
+---
+
+<div id={id} class="temporary-slot-wrapper" style="display: none; pointer-events: none;">
+    <div class="temporary-slot-inner">
+        <span>+</span>
+    </div>
+</div>
+
+<style define:vars={{ color }}>
+    .temporary-slot-wrapper {
+        /* Position will be set by grid-column/row from calendar.astro via dataset attributes */
+        position: relative; /* Needed for the inner absolute positioning if there was any offset, but here mostly for structure */
+        margin: 0 1px;  /* Mimic event card wrapper spacing */
+        /* pointer-events: none; is set inline for clarity and ensures it doesn't block clicks */
+    }
+    .temporary-slot-inner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 2px dashed var(--color);
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .temporary-slot-inner span {
+        font-size: 2rem;
+        color: var(--color);
+        line-height: 1;
+    }
+</style>
+
+<script define:vars={{ componentId: id }}>
+    const componentWrapper = document.getElementById(componentId);
+
+    // This function will be called by calendar.astro to update the slot
+    // Alternatively, a MutationObserver could be used here if we prefer this component
+    // to be fully autonomous in reacting to its own data-attributes.
+    // For now, direct function call from calendar.astro is simpler.
+
+    function updateAppearance() {
+        if (!componentWrapper) return;
+
+        const isVisible = componentWrapper.dataset.isVisible === 'true';
+
+        if (isVisible) {
+            componentWrapper.style.display = 'block'; // Or 'contents' or 'initial' depending on desired layout effect from parent
+            componentWrapper.style.gridColumn = componentWrapper.dataset.gridColumn || '';
+            componentWrapper.style.gridRow = componentWrapper.dataset.gridRow || '';
+        } else {
+            componentWrapper.style.display = 'none';
+            componentWrapper.style.gridColumn = ''; // Clear grid positioning when hidden
+            componentWrapper.style.gridRow = '';
+        }
+    }
+    
+    // Expose the update function so calendar.astro can call it.
+    // This is a common pattern for simple inter-island or script-to-island communication in Astro.
+    if (componentWrapper) {
+        componentWrapper.updateAppearance = updateAppearance;
+    }
+
+
+    // Initial hide, in case data-attributes are somehow set by SSR (though unlikely here)
+    // or to ensure a clean state before the first click.
+    // The MutationObserver approach would handle this more gracefully if attributes were set before script runs.
+    // Given we call updateAppearance from parent, this specific initial call might be redundant
+    // if parent ensures to set isVisible to false initially or call update.
+    if (componentWrapper && componentWrapper.dataset.isVisible !== 'true') {
+         componentWrapper.style.display = 'none';
+    }
+</script> 

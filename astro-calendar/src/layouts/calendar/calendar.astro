@@ -1,108 +1,193 @@
 ---
 import { Separator } from "@/components/ui/separator";
-import CalendarHeader from "./calendar-header.astro"; // Import header
 import EventGrid from "./event-grid.astro"; // Import placeholder for events
+import TemporarySlot from "@/components/temporary-slot.astro"; // Import the new component
 
 const generateHours = (start = 6, end = 24, interval = 60) => {
-    const result = [];
-    // Calculate total rows needed based on interval
-    const totalRows = ((end - start) * 60) / interval;
-    for (let i = 0; i < totalRows; i++) {
-        const totalMinutes = start * 60 + i * interval;
-        const hour24 = Math.floor(totalMinutes / 60);
-        const minute = totalMinutes % 60;
+  const result = [];
+  // Calculate total rows needed based on interval
+  const totalRows = ((end - start) * 60) / interval;
+  for (let i = 0; i < totalRows; i++) {
+    const totalMinutes = start * 60 + i * interval;
+    const hour24 = Math.floor(totalMinutes / 60);
+    const minute = totalMinutes % 60;
 
-        const hour = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
-        const period = hour24 >= 12 && hour24 < 24 ? "pm" : "am";
-        // Add grid row number (starting from 2, as header is row 1)
-        result.push({ hour, period, minute, gridRowStart: i + 2 });
-    }
-    return result;
+    const hour = hour24 > 12 ? hour24 - 12 : hour24 === 0 ? 12 : hour24;
+    const period = hour24 >= 12 && hour24 < 24 ? "pm" : "am";
+    // Add grid row number (starting from 2, as header is row 1)
+    result.push({ hour, period, minute, gridRowStart: i + 2 });
+  }
+  return result;
 };
-
 
 // Generate hours for each 60-minute interval (adjust interval for 30min if needed)
 const hours = generateHours(6, 24, 60);
 const gridRowCount = hours.length + 1; // +1 for header row
+const numberOfHourSlots = hours.length; // Variable for client-side script
+
+// Configuration for click event (must match event-grid.astro for consistency)
+const startHour = 6;
+const interval = 60; // Minutes
 ---
 
 <style define:vars={{ gridRowCount }}>
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: auto repeat(7, 1fr);
-        grid-template-rows: auto repeat(var(--gridRowCount, 20), 5.5rem);
-        row-gap: 0.75em;
-        column-gap: 1em;
-        flex: 1;
-        overflow-y: auto;
-        position: relative;
-        padding: 2rem;
-    }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: auto repeat(7, 1fr);
+    grid-template-rows: auto repeat(var(--gridRowCount, 20), 5.5rem);
+    row-gap: 0.75em;
+    column-gap: 1em;
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding: 2rem;
+  }
 
-    .time-label {
-        grid-column: 1;
-        text-align: right;
-        padding-right: 1rem; /* Adjust as needed */
-        /* Center vertically within the row span */
-        display: flex;
-        align-items: start;
-        justify-content: flex-end;
-    }
+  .time-label {
+    grid-column: 1;
+    text-align: right;
+    padding-right: 1rem; /* Adjust as needed */
+    /* Center vertically within the row span */
+    display: flex;
+    align-items: start;
+    justify-content: flex-end;
+  }
 
-    .header-container {
-         /* Span across all 8 columns */
-        grid-column: 1 / -1;
-        grid-row: 1;
-        position: sticky; /* Keep header visible */
-        top: 0;
-        background-color: white; /* Or your desired background */
-        z-index: 10;
-    }
+  .header-container {
+    /* Span across all 8 columns */
+    grid-column: 1 / -1;
+    grid-row: 1;
+    position: sticky; /* Keep header visible */
+    top: 0;
+    background-color: white; /* Or your desired background */
+    z-index: 10;
+  }
 
-    .day-header-banner {
-        /* Starts from the second column (after time labels) */
-        grid-column: 2 / -1;
-        grid-row: 1;
-         /* Align with the time slots visually if needed */
-        display: flex;
-        align-items: end; /* Align items to bottom if header has extra space */
-        padding-bottom: 0.5rem; /* Example */
-    }
+  .day-header-banner {
+    /* Starts from the second column (after time labels) */
+    grid-column: 2 / -1;
+    grid-row: 1;
+    /* Align with the time slots visually if needed */
+    display: flex;
+    align-items: end; /* Align items to bottom if header has extra space */
+    padding-bottom: 0.5rem; /* Example */
+  }
 
-     .time-separator-container {
-        grid-column: 1; /* Only in the time column */
-        position: relative; /* For absolute positioning the line inside */
-        display: flex;
-        align-items: center; /* Center separator vertically */
-     }
+  .time-separator-container {
+    grid-column: 1; /* Only in the time column */
+    position: relative; /* For absolute positioning the line inside */
+    display: flex;
+    align-items: center; /* Center separator vertically */
+  }
 
-    /* Hide scrollbar styles */
-    .hide-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;     /* Firefox */
-    }
-    .hide-scrollbar::-webkit-scrollbar {
-        display: none;             /* Chrome, Safari and Opera */
-    }
+  /* Hide scrollbar styles */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 </style>
 
 <div class="flex flex-col flex-1 bg-gray-100 overflow-hidden">
-    <Separator />
-    <div class="calendar-grid hide-scrollbar mt-4">
-        
-        {
-            hours.map((time, index) => (
-                <>
-                    <div class="time-label text-base font-extralight" style={`grid-row: ${time.gridRowStart};`}>
-                        {time.minute === 0 ? `${time.hour} ${time.period}` : ''}
-                    </div>
-                </>
-            ))
-        }
+  <Separator />
+  <div class="calendar-grid hide-scrollbar mt-4" id="calendarGrid">
+    {
+      hours.map((time, index) => (
+        <>
+          <div
+            class="time-label text-base font-extralight"
+            style={`grid-row: ${time.gridRowStart};`}
+          >
+            {time.minute === 0 ? `${time.hour} ${time.period}` : ""}
+          </div>
+        </>
+      ))
+    }
 
-        <div style={`grid-column: 2 / -1; grid-row: 2 / span ${hours.length}; display: contents;`}>
-            <EventGrid/>
-        </div>
-
+    <div
+      style={`grid-column: 2 / -1; grid-row: 2 / span ${hours.length}; display: contents;`}
+    >
+      <EventGrid />
     </div>
+    <TemporarySlot id="temp-slot-instance" />
+  </div>
 </div>
+
+<script define:vars={{ startHour, interval, numberOfHourSlots }}>
+  const calendarGrid = document.getElementById("calendarGrid");
+  const tempSlotElement = document.getElementById("temp-slot-instance"); 
+
+  // Helper function to calculate clicked cell indices
+  function calculateCellIndicesFromClick(event, gridElement) {
+    const rect = gridElement.getBoundingClientRect();
+    const y = event.clientY - rect.top;
+    const x = event.clientX - rect.left;
+
+    // Assumptions based on current CSS and common defaults.
+    // For more robustness, these could be dynamically calculated or passed if they vary.
+    const remInPixels = 16; 
+    const emInPixels = 16;
+
+    const gridStyles = window.getComputedStyle(gridElement);
+    const paddingTopPx = parseFloat(gridStyles.paddingTop);
+    // Values from .calendar-grid CSS: grid-template-rows: ... 5.5rem; row-gap: 0.75em;
+    const rowHeightFromCssRem = 5.5; 
+    const rowGapFromCssEm = 0.75;
+
+    const rowHeightPx = rowHeightFromCssRem * remInPixels;
+    const rowGapPx = rowGapFromCssEm * emInPixels;
+    const effectiveRowHeight = rowHeightPx + rowGapPx;
+
+    const contentY = y - paddingTopPx;
+    const clickedRowIndex = Math.floor(contentY / effectiveRowHeight);
+
+    const gridColumnStrings = gridStyles.getPropertyValue("grid-template-columns").split(" ");
+    const columnGapPx = parseFloat(gridStyles.columnGap);
+    
+    let clickedColumnIndex = -1;
+    let currentIteratingXOffset = 0;
+    for (let i = 0; i < gridColumnStrings.length; i++) {
+      const colWidth = parseFloat(gridColumnStrings[i]);
+      if (x >= currentIteratingXOffset && x < currentIteratingXOffset + colWidth) {
+        clickedColumnIndex = i;
+        break;
+      }
+      currentIteratingXOffset += colWidth;
+      if (i < gridColumnStrings.length - 1) {
+        currentIteratingXOffset += columnGapPx;
+      }
+    }
+    return { clickedRowIndex, clickedColumnIndex };
+  }
+
+  // Initially hide the temporary slot
+  if (tempSlotElement && typeof tempSlotElement.updateAppearance === 'function') {
+    tempSlotElement.dataset.isVisible = 'false';
+    tempSlotElement.updateAppearance();
+  }
+
+  calendarGrid.addEventListener("click", (event) => {
+    if (!tempSlotElement || typeof tempSlotElement.updateAppearance !== 'function') {
+        console.error("TemporarySlot element or its updateAppearance method not found.");
+        return;
+    }
+
+    const { clickedRowIndex, clickedColumnIndex } = calculateCellIndicesFromClick(event, calendarGrid);
+    
+    // numberOfHourSlots is available here from define:vars
+    const isValidSlotClick = clickedColumnIndex > 0 && 
+                             clickedRowIndex >= 0 && 
+                             clickedRowIndex < numberOfHourSlots;
+
+    if (isValidSlotClick) {
+        tempSlotElement.dataset.gridColumn = `${clickedColumnIndex + 1}`;
+        tempSlotElement.dataset.gridRow = `${clickedRowIndex + 2}`;
+        tempSlotElement.dataset.isVisible = 'true';
+    } else {
+        tempSlotElement.dataset.isVisible = 'false';
+    }
+    tempSlotElement.updateAppearance();
+  });
+</script>

@@ -3,4 +3,10 @@
 
 @theme {
   --font-sans: "Outfit", "sans-serif";
+  --color-test: #3ab7bf;
+  --color-blue-custom: #b0cff3;
+  --color-green-custom: #a5eebe;
+  --color-yellow-custom: #efc97d;
+  --color-purple-custom: #b591ef;
+  --color-pink-custom: #f6abd8;
 }
