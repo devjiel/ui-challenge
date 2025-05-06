@@ -8,80 +8,163 @@ interface CalendarEvent {
     startTime: string;
     endTime: string;
     dayIndex: number;
-    color: EventColor; // Use the imported type here
+    color: EventColor;
     attendees?: string[];
+    widthPercent?: number;
+    leftPercent?: number;
 }
 
-// Dummy event data for now, typed with CalendarEvent
+// --- Configuration (should match calendar.astro) ---
+const startHour = 6;       // Hour the calendar grid starts
+const interval = 60;       // Minutes per grid row
+const rowHeightRem = 4.5;  // Height of a grid row in rem (must match calendar.astro)
+// --- End Configuration ---
+
+// Calculate pixels per minute (assuming 1rem = 16px, adjust if needed)
+const remInPixels = 16;
+const rowHeightPx = rowHeightRem * remInPixels;
+const pixelsPerMinute = rowHeightPx / interval;
+
+// Dummy event data
 const events: CalendarEvent[] = [
+  {
+    id: 0,
+    title: 'Running',
+    startTime: '06:00',
+    endTime: '08:00',
+    dayIndex: 0,
+    color: 'yellow',
+    widthPercent: 100,
+    leftPercent: 0,
+  },
   {
     id: 1,
     title: 'Booking taxi app',
     startTime: '06:00',
     endTime: '07:30',
-    dayIndex: 0,
+    dayIndex: 1,
     color: 'blue',
-    attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png', '/assets/images/avatar-3.png']
+    attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png', '/assets/images/avatar-3.png'],
+    widthPercent: 50 - 1,
+    leftPercent: 0,
   },
   {
     id: 2,
     title: 'Design onboarding',
     startTime: '06:00',
-    endTime: '07:10',
+    endTime: '07:10', // Precise end time
     dayIndex: 1,
-    color: 'green'
+    color: 'green',
+    widthPercent: 50 - 1,
+    leftPercent: 50  + 1,
   },
-    {
+  {
     id: 3,
     title: 'Development meet',
     startTime: '08:00',
-    endTime: '09:00', // Adjusted from image for simplicity
+    endTime: '09:00',
     dayIndex: 1,
-    color: 'purple'
+    color: 'purple',
+    widthPercent: 100,
+    leftPercent: 0,
   },
-  // Add more events based on the screenshot
 ];
 
-// Function to calculate grid row based on time (assuming 6 AM start, 60 min intervals)
-const calculateGridRow = (time: string, startHour = 6, interval = 60) => {
+// Calculates the starting grid row (still needed for the wrapper)
+const calculateGridRow = (time: string) => {
   const [hour, minute] = time.split(':').map(Number);
   const totalMinutes = (hour * 60 + minute) - (startHour * 60);
   const row = Math.floor(totalMinutes / interval) + 2;
   return row;
 };
 
-const calculateRowSpan = (startTime: string, endTime: string, interval = 60) => {
-    const [startHour, startMinute] = startTime.split(':').map(Number);
+// Calculates how many grid rows the event spans (for the wrapper)
+const calculateRowSpan = (startTime: string, endTime: string) => {
+    const [startHourS, startMinute] = startTime.split(':').map(Number);
     const [endHour, endMinute] = endTime.split(':').map(Number);
-    const startTotalMinutes = startHour * 60 + startMinute;
+    const startTotalMinutes = startHourS * 60 + startMinute;
     const endTotalMinutes = endHour * 60 + endMinute;
-    const durationMinutes = endTotalMinutes - startTotalMinutes;
-    const span = Math.ceil(durationMinutes / interval);
-    return Math.max(1, span);
+    // Calculate start/end relative to the beginning of the *day grid*
+    const startMinutesInDay = startTotalMinutes - (startHour * 60);
+    const endMinutesInDay = endTotalMinutes - (startHour * 60);
+    // Determine the row index for start and end
+    const startRowIndex = Math.floor(startMinutesInDay / interval);
+    const endRowIndex = Math.floor((endMinutesInDay -1) / interval); // -1 to handle events ending exactly on the hour
+    const span = Math.max(1, endRowIndex - startRowIndex + 1);
+    return span;
+}
+
+// Calculates the duration in minutes
+const calculateDurationMinutes = (startTime: string, endTime: string) => {
+    const [startHourS, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    const startTotalMinutes = startHourS * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+    return Math.max(1, endTotalMinutes - startTotalMinutes); // Minimum duration 1 min
+}
+
+// Calculates the offset in minutes from the start of the first grid cell
+const calculateTopOffsetPercent = (startTime: string, interval: number, rowSpan: number) => {
+    const [hour, minute] = startTime.split(':').map(Number);
+    const totalMinutes = (hour * 60 + minute) - (startHour * 60);
+    const minutesFromGridRowStart = totalMinutes % interval;
+    // Total minutes covered by the span
+    const totalSpanMinutes = rowSpan * interval;
+    return (minutesFromGridRowStart / totalSpanMinutes) * 100;
+}
+
+// Calculates the height in percent relative to the wrapper
+const calculateHeightPercent = (startTime: string, endTime: string, interval: number, rowSpan: number) => {
+    const [startHourS, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    const startTotalMinutes = startHourS * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+    const durationMinutes = Math.max(1, endTotalMinutes - startTotalMinutes);
+    const totalSpanMinutes = rowSpan * interval;
+    return (durationMinutes / totalSpanMinutes) * 100;
 }
 
 ---
-{events.map(event => {
-    const gridColumnStart = event.dayIndex + 2; // +1 for time col, +1 for 0-based index
+{events.map((event, index) => {
+    const gridColumnStart = event.dayIndex + 2;
     const gridRowStart = calculateGridRow(event.startTime);
     const rowSpan = calculateRowSpan(event.startTime, event.endTime);
+    // Calculate top and height in percent for precise placement
+    const topPercent = calculateTopOffsetPercent(event.startTime, interval, rowSpan);
+    const heightPercent = calculateHeightPercent(event.startTime, event.endTime, interval, rowSpan);
 
-    const style = `
+    // Wrapper still defines the grid area
+    const wrapperStyle = `
         grid-column: ${gridColumnStart};
         grid-row: ${gridRowStart} / span ${rowSpan};
-        z-index: 10;
-        margin: 1em; 
+        position: relative;
         min-height: 0;
+        margin: 0 1px;
+    `;
+
+    // Card style uses absolute positioning with calculated top and height (in % of wrapper)
+    const cardStyle = `
+        position: absolute;
+        top: ${topPercent}%;
+        left: ${event.leftPercent ?? 0}%;
+        width: ${event.widthPercent ?? 100}%;
+        height: ${heightPercent}%;
+        min-height: 0;
+        box-sizing: border-box;
+        padding: 0.75rem 0.75rem;
+        overflow: hidden;
     `;
 
     return (
-        <EventCard
-            style={style} 
-            title={event.title}
-            startTime={event.startTime}
-            endTime={event.endTime}
-            color={event.color}
-            attendees={event.attendees}
-        />
+        <div style={wrapperStyle}>
+            <EventCard
+                style={cardStyle}
+                title={event.title}
+                startTime={event.startTime}
+                endTime={event.endTime}
+                color={event.color}
+                attendees={event.attendees}
+            />
+        </div>
     );
 })} 

@@ -1,6 +1,7 @@
 ---
 // Placeholder for Event Card display
 import type { HTMLAttributes } from 'astro/types';
+import "../styles/global.css";
 
 export type EventColor = 'blue' | 'green' | 'yellow' | 'purple' | 'pink';
 
@@ -14,20 +15,42 @@ export interface Props extends HTMLAttributes<'div'> {
 
 const { title, startTime, endTime, color, attendees, ...rest } = Astro.props;
 
-const colorClasses: Record<EventColor, string> = {
-    blue: 'bg-blue-300 border-blue-300 text-blue-800',
-    green: 'bg-green-300 border-green-300 text-green-800',
-    yellow: 'bg-yellow-300 border-yellow-300 text-yellow-800',
-    purple: 'bg-purple-300 border-purple-300 text-purple-800',
-    pink: 'bg-pink-300 border-pink-300 text-pink-800',
+// Map color names to direct color hex values
+const colorHexMap: Record<EventColor, string> = {
+    blue: '#B0CFF3',
+    green: '#A5EEBE',
+    yellow: '#EFC97D',
+    purple: '#b591ef',
+    pink: '#F6ABD8',
 };
 
-const cardColor = colorClasses[color] ?? 'bg-gray-100 border-gray-300 text-gray-800';
+// Get the correct hex color
+const hexColor = colorHexMap[color] || '#F3F4F6'; // Default to light gray
+
+// Also keep the Tailwind class mapping for redundancy
+const colorClasses: Record<EventColor, string> = {
+    blue: 'bg-blue-custom',
+    green: 'bg-green-custom',
+    yellow: 'bg-yellow-custom',
+    purple: 'bg-purple-custom',
+    pink: 'bg-pink-custom',
+};
+
+// Combine both approaches
+const cardColor = colorClasses[color] ?? 'bg-gray-100';
+
+// Merge passed style with the background color
+const passedStyle = rest.style || '';
+const combinedStyle = `background-color: ${hexColor}; ${passedStyle}`;
 ---
 
-<div class:list={["rounded-lg p-2 flex flex-col overflow-hidden h-full", cardColor]} {...rest}>
-    <h4 class="font-normal text-xs leading-tight mb-1 text-ellipsis text-black">{title}</h4>
-    <p class="opacity-80 flex-shrink-0 text-xs text-gray-500">{startTime} - {endTime}</p>
+<div 
+    class:list={["rounded-lg p-2 flex flex-col overflow-hidden h-full", cardColor]}
+    style={combinedStyle}
+    {...rest}
+>
+    <h4 class="font-semibold text-xs leading-tight mb-1">{title}</h4>
+    <p class="text-xs opacity-80 flex-shrink-0">{startTime} - {endTime}</p>
     {attendees && attendees.length > 0 && (
         <div class="flex -space-x-2 mt-auto pt-1 flex-shrink-0">
             {attendees.map((avatar, index) => (
@@ -42,12 +65,17 @@ const cardColor = colorClasses[color] ?? 'bg-gray-100 border-gray-300 text-gray-
 </div>
 
 <style>
+    /* Ensure the div styling doesn't override the background */
     h4 {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    
+    /* Remove any custom styling on the div that might interfere with Tailwind */
+    /*
     div {
         min-height: 0;
     }
+    */
 </style> 
