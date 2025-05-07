@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "start": "node ./dist/server/entry.mjs --host 192.169.0.11 --port 4321",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.6",
+    "@astrojs/node": "^9.2.1",
     "@astrojs/react": "^4.2.7",
     "@radix-ui/react-avatar": "^1.1.7",
     "@radix-ui/react-separator": "^1.1.4",
