@@ -1,8 +1,6 @@
 import { createGlobPatternsForDependencies } from '@nxtensions/astro/tailwind';
 import { join } from 'path';
 
-const { fontFamily } = require("tailwindcss/defaultTheme");
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -15,11 +13,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        foo: '#123',
+        foo: '#FFFF00',
         many: {
           nested: {
             objects: {
-              here: '#456',
+              here: '#0000FF',
             },
           },
         },

@@ -5,14 +5,14 @@ import { type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { toggleVariants } from "@/components/ui/toggle"
 
-const ToggleGroupContext = React.createContext<
+const PeriodToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants>
 >({
   size: "default",
   variant: "default",
 })
 
-function ToggleGroup({
+export function PeriodToggleGroup({
   className,
   variant,
   size,
@@ -31,14 +31,14 @@ function ToggleGroup({
       )}
       {...props}
     >
-      <ToggleGroupContext.Provider value={{ variant, size }}>
+      <PeriodToggleGroupContext.Provider value={{ variant, size }}>
         {children}
-      </ToggleGroupContext.Provider>
+      </PeriodToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
   )
 }
 
-function ToggleGroupItem({
+export function PeriodToggleGroupItem({
   className,
   children,
   variant,
@@ -46,7 +46,7 @@ function ToggleGroupItem({
   ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
   VariantProps<typeof toggleVariants>) {
-  const context = React.useContext(ToggleGroupContext)
+  const context = React.useContext(PeriodToggleGroupContext)
 
   return (
     <ToggleGroupPrimitive.Item
@@ -67,5 +67,3 @@ function ToggleGroupItem({
     </ToggleGroupPrimitive.Item>
   )
 }
-
-export { ToggleGroup, ToggleGroupItem }

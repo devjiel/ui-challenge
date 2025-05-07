@@ -1,12 +1,24 @@
 ---
 import "../styles/global.css";
+import "../styles/fullcalendar.css";
 
 import Sidebar from "@/layouts/sidebar.astro";
-import CalendarHeader from "@/layouts/calendar/calendar-header.astro";
-import Calendar from "@/layouts/calendar/calendar.astro";
-
+import CalendarTopSection from "@/layouts/calendar/calendar-top-section.astro";
+import FullCalendarWrapper from "@/components/ui/full-calendar-wrapper.tsx";
+import { demoEvents } from "@/mocks/event-mock";
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
+
+// Création des dates pour les événements
+const today = new Date();
+const tomorrow = new Date();
+tomorrow.setDate(today.getDate() + 1);
+const inThreeDays = new Date();
+inThreeDays.setDate(today.getDate() + 3);
+
+// Variables pour coordonner les composants
+const initialDate = new Date();
+const initialView = "week";
 ---
 
 <html lang="en">
@@ -23,8 +35,14 @@ import Calendar from "@/layouts/calendar/calendar.astro";
 			<Sidebar />
 			<div class="p-1"></div>
 			<div class="bg-white rounded-3xl flex flex-col h-full w-full">
-				<CalendarHeader />
-				<Calendar />
+				<div id="calendar-container" class="flex flex-col h-full">
+					<CalendarTopSection />
+					<div class="py-4"/>
+					<div class="py-6 bg-gray-100"/>
+					<div class="flex-grow">
+						<FullCalendarWrapper client:load initialEvents={demoEvents} />
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>

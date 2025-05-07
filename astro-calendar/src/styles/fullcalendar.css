@@ -1,0 +1,244 @@
+.fc {
+  font-family: "Outfit", system-ui, -apple-system, sans-serif;
+  --fc-border-color: transparent;
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #f7f7f7;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: transparent;
+  --fc-today-bg-color: rgba(245, 245, 245, 0.4);
+  --fc-now-indicator-color: transparent;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Hide scrollbars but keep scroll functionality */
+.fc-scroller,
+.fc-timegrid-body,
+.fc-daygrid-body,
+.fc-list-table,
+.fc-scrollgrid-sync-inner {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.fc-scroller::-webkit-scrollbar,
+.fc-timegrid-body::-webkit-scrollbar,
+.fc-daygrid-body::-webkit-scrollbar,
+.fc-list-table::-webkit-scrollbar,
+.fc-scrollgrid-sync-inner::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.fc .fc-toolbar {
+  padding: 0.5rem 1rem;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.fc .fc-button {
+  background: #f5f5f5;
+  border: none;
+  color: #333;
+  font-weight: 500;
+  box-shadow: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  height: auto;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #333;
+  color: white;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: #e9e9e9;
+}
+
+.fc .fc-daygrid-day-top {
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.fc .fc-col-header-cell-cushion {
+  padding: 0.5rem;
+  font-weight: 500;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 1.5rem;
+  font-weight: 600;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fc .fc-event {
+  border-radius: 6px;
+  border: none;
+  padding: 0;
+  margin: 2px;
+  background: transparent;
+}
+
+.fc .fc-event-main {
+  padding: 0;
+  border-radius: 6px;
+}
+
+.fc .fc-timegrid-slot,
+.fc .fc-timegrid-slot-minor {
+  height: 4rem !important;
+  border: none !important;
+}
+
+.fc .fc-timegrid-axis {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666;
+  font-family: "Outfit", sans-serif;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+  padding-right: 2rem !important;
+  padding-left: 1rem !important;
+}
+
+.fc .fc-timegrid-slot-label {
+  font-family: "Outfit", sans-serif;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  vertical-align: top;
+}
+
+/* Ensure header hours use Outfit font */
+.fc .fc-col-header-cell,
+.fc-timegrid-axis-cushion,
+.fc-timegrid-slot-label-cushion,
+.fc-col-header-cell-cushion {
+  font-family: "Outfit", sans-serif;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-scrollgrid,
+.fc-scrollgrid-section > * {
+  border: none !important;
+}
+
+.fc-timegrid-event-harness-inset .fc-timegrid-event {
+  box-shadow: none;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: var(--fc-today-bg-color);
+}
+
+.fc .fc-scrollgrid-section-header {
+  background-color: white;
+}
+
+/* Event styles */
+.event-content {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Colored events by category */
+.event-booking {
+  background-color: #dbeafe;
+}
+.event-design {
+  background-color: #d1fae5;
+}
+.event-development {
+  background-color: #e5e7eb;
+}
+.event-meeting {
+  background-color: #fef3c7;
+}
+.event-planning {
+  background-color: #e0e7ff;
+}
+.event-review {
+  background-color: #ffedd5;
+}
+.event-other {
+  background-color: #fde68a;
+}
+
+/* Day numbers in month view */
+.fc .fc-day-today .fc-daygrid-day-number {
+  background-color: #111827;
+  color: white;
+  border-radius: 50%;
+}
+
+/* Hide current time indicator completely */
+.fc-timegrid-now-indicator-line,
+.fc-timegrid-now-indicator-arrow {
+  display: none !important;
+}
+
+/* Style for the event selection mirror (when adding a new event)
+   This replaces the default yellow square with a dashed border and a centered add icon */
+.fc-event-mirror,
+.fc-event.fc-mirror {
+  background: transparent !important;
+  border: 2px dashed #d1d5db !important; /* Grey-300 for visibility */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem !important;
+  height: 8rem !important;
+  min-width: 32px;
+  position: relative;
+  box-shadow: none !important;
+}
+
+.fc .fc-highlight {
+  background: transparent !important;
+}
+
+/* Hide the default event content (hours, title, etc.) inside the mirror */
+.fc-event-mirror .fc-event-main,
+.fc-event.fc-mirror .fc-event-main {
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+/* Hide any custom event content background in the mirror */
+.fc-event-mirror .event-content,
+.fc-event.fc-mirror .event-content {
+  background: transparent !important;
+}
+
+/* Add a centered add icon using a pseudo-element */
+.fc-event-mirror::after,
+.fc-event.fc-mirror::after {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  background-image: url("/assets/icons/add.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  pointer-events: none;
+}
