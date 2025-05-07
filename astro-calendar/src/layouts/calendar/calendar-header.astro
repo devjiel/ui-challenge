@@ -2,13 +2,35 @@
 import { ReactToggleGroup } from "@/components/ui/react-toggle-group";
 import CalendarBannerDay from "@/components/calendar-banner-day.astro";
 import DaySelector from "@/components/day-selector.astro";
+
+// Ajouter les props pour l'intégration avec FullCalendar
+export interface Props {
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
+  onViewChange?: (view: string) => void;
+  currentView?: string;
+}
+
+// Récupérer les props avec des valeurs par défaut
+const { 
+  selectedDate = new Date(),
+  onDateChange,
+  onViewChange,
+  currentView = 'week'
+} = Astro.props;
+
+// Formater la date pour l'affichage
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const month = monthNames[selectedDate.getMonth()];
+const year = selectedDate.getFullYear();
+const formattedDate = `${month}, ${year}`;
 ---
 
 <div class="p-6 flex-col">
     <div class="flex flex-row justify-between items-center">
-        <div class="text-2xl font-normal">May, 2025</div>
-        <ReactToggleGroup client:load />
-        <DaySelector />
+        <div class="text-2xl font-normal">{formattedDate}</div>
+        <ReactToggleGroup client:load defaultValue={currentView} />
+        <DaySelector selectedDate={selectedDate} />
     </div>
     <div class="p-4"></div>
     <div class="flex gap-4 justify-between">
@@ -20,3 +42,16 @@ import DaySelector from "@/components/day-selector.astro";
         <CalendarBannerDay />
     </div>
 </div>
+
+<script is:inline>
+    // Script pour configurer la communication entre les composants
+    document.addEventListener('DOMContentLoaded', function() {
+        // Écouter les événements personnalisés pour les changements de vue
+        window.addEventListener('toggle-group:value-change', function(e) {
+            const viewChangeEvent = new CustomEvent('fullcalendar:view-change', {
+                detail: { view: e.detail.value }
+            });
+            window.dispatchEvent(viewChangeEvent);
+        });
+    });
+</script>

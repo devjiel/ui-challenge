@@ -1,15 +1,52 @@
 ---
+export interface Props {
+  selectedDate?: Date;
+}
 
+const { selectedDate = new Date() } = Astro.props;
 ---
 
 <div class="flex flex-row gap-2">
-    <div class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center">
+    <div 
+      class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center cursor-pointer hover:bg-gray-200" 
+      onclick="window.dispatchEvent(new CustomEvent('calendar-prev'))"
+    >
         <img class="w-4 h-4" src="assets/icons/arrow-left.svg" alt="arrow-left" />
     </div>
-    <div class="bg-gray-100 rounded-xl px-8 py-3 flex items-center justify-center">
+    <div 
+      class="bg-gray-100 rounded-xl px-8 py-3 flex items-center justify-center cursor-pointer hover:bg-gray-200"
+      onclick="window.dispatchEvent(new CustomEvent('calendar-today'))"
+    >
         <div class="text-base font-bold">Today</div>
     </div>
-    <div class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center">
+    <div 
+      class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center cursor-pointer hover:bg-gray-200"
+      onclick="window.dispatchEvent(new CustomEvent('calendar-next'))"
+    >
         <img class="w-4 h-4" src="assets/icons/arrow-right.svg" alt="arrow-right" />
     </div>
 </div>
+
+<script is:inline>
+  // Ajouter les événements calendar-prev, calendar-today, calendar-next
+  document.addEventListener('DOMContentLoaded', function() {
+    const prevButton = document.querySelector('[onclick*="calendar-prev"]');
+    const todayButton = document.querySelector('[onclick*="calendar-today"]');
+    const nextButton = document.querySelector('[onclick*="calendar-next"]');
+    
+    prevButton.addEventListener('click', function() {
+      const event = new CustomEvent('astro:calendar-prev');
+      window.dispatchEvent(event);
+    });
+    
+    todayButton.addEventListener('click', function() {
+      const event = new CustomEvent('astro:calendar-today');
+      window.dispatchEvent(event);
+    });
+    
+    nextButton.addEventListener('click', function() {
+      const event = new CustomEvent('astro:calendar-next');
+      window.dispatchEvent(event);
+    });
+  });
+</script>

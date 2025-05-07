@@ -1,132 +1,124 @@
-import type { EventColor } from '@/components/event-card.astro';
+// Demo events mock for calendar
+// This file exports a list of demo events for use in the application
 
-// Define a type for the event structure
-export interface CalendarEvent {
-    id: number;
-    title: string;
-    startTime: string;
-    endTime: string;
-    dayIndex: number; // 0 for Sunday, 1 for Monday, ..., 6 for Saturday (or adjust as needed)
-    color: EventColor;
-    attendees?: string[];
-    widthPercent?: number;
-    leftPercent?: number;
-}
+const today = new Date();
+const tomorrow = new Date();
+tomorrow.setDate(today.getDate() + 1);
+const inThreeDays = new Date();
+inThreeDays.setDate(today.getDate() + 3);
 
-// Dummy event data
-export const events: CalendarEvent[] = [
+export const demoEvents = [
+    // Événements pour aujourd'hui
     {
-        id: 0,
-        title: 'Running',
-        startTime: '06:00',
-        endTime: '08:00',
-        dayIndex: 0, // Sunday
-        color: 'yellow',
-        widthPercent: 100,
-        leftPercent: 0,
-    },
-    {
-        id: 1,
+        id: '1',
         title: 'Booking taxi app',
-        startTime: '06:00',
-        endTime: '07:30',
-        dayIndex: 1, // Monday
-        color: 'blue',
-        attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png', '/assets/images/avatar-3.png'],
-        widthPercent: 50 - 1,
-        leftPercent: 0,
+        start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 6, 0),
+        end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 7, 30),
+        color: '#DBEAFE',
+        extendedProps: {
+            attendees: [
+                { id: '1', name: 'User 1', avatar: 'assets/images/avatar1.jpg' },
+                { id: '2', name: 'User 2', avatar: 'assets/images/avatar2.jpg' },
+                { id: '3', name: 'User 3', avatar: 'assets/images/avatar3.jpg' }
+            ]
+        }
     },
     {
-        id: 2,
+        id: '2',
         title: 'Design onboarding',
-        startTime: '06:00',
-        endTime: '07:10',
-        dayIndex: 1, // Monday
-        color: 'green',
-        widthPercent: 50 - 1,
-        leftPercent: 50 + 1,
+        start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0),
+        end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 10),
+        color: '#D1FAE5'
     },
     {
-        id: 3,
+        id: '3',
         title: 'Development meet',
-        startTime: '08:00',
-        endTime: '09:00',
-        dayIndex: 1, // Monday
-        color: 'purple',
-        widthPercent: 100,
-        leftPercent: 0,
+        start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
+        end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0),
+        color: '#E5E7EB'
     },
-    // Added events for other days
+    // Événements pour demain
     {
-        id: 4,
-        title: 'Team Sync',
-        startTime: '10:00',
-        endTime: '11:00',
-        dayIndex: 2, // Tuesday
-        color: 'pink',
-        widthPercent: 100,
-        leftPercent: 0,
+        id: '4',
+        title: 'Development meet',
+        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 8, 40),
+        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0),
+        color: '#E5E7EB'
     },
     {
-        id: 5,
-        title: 'Client Call',
-        startTime: '14:00',
-        endTime: '15:00',
-        dayIndex: 3, // Wednesday
-        color: 'blue',
-        attendees: ['/assets/images/avatar-4.png'],
-        widthPercent: 100,
-        leftPercent: 0,
+        id: '5',
+        title: 'Book offsite',
+        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 7, 30),
+        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0),
+        color: '#E5E7EB'
     },
     {
-        id: 6,
-        title: 'Project Planning',
-        startTime: '09:00',
-        endTime: '11:30',
-        dayIndex: 4, // Thursday
-        color: 'green',
-        widthPercent: 70,
-        leftPercent: 0,
+        id: '6',
+        title: 'Design session',
+        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 7, 50),
+        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 30),
+        color: '#FEF3C7',
+        extendedProps: {
+            attendees: [
+                { id: '4', name: 'User 4', avatar: 'assets/images/avatar1.jpg' },
+                { id: '5', name: 'User 5', avatar: 'assets/images/avatar2.jpg' },
+                { id: '6', name: 'User 6', avatar: 'assets/images/avatar3.jpg' }
+            ]
+        }
     },
     {
-        id: 7,
-        title: 'Review Session',
-        startTime: '10:00',
-        endTime: '12:00',
-        dayIndex: 4, // Thursday
-        color: 'yellow',
-        widthPercent: 30 - 1,
-        leftPercent: 70 + 1,
+        id: '7',
+        title: 'Design Review',
+        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 40),
+        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 30),
+        color: '#DBEAFE'
+    },
+    // Événements pour dans trois jours
+    {
+        id: '8',
+        title: 'Planning tasks',
+        start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 7, 50),
+        end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 8, 30),
+        color: '#E0E7FF'
     },
     {
-        id: 8,
-        title: 'Focus Work',
-        startTime: '13:00',
-        endTime: '16:00',
-        dayIndex: 5, // Friday
-        color: 'purple',
-        widthPercent: 100,
-        leftPercent: 0,
+        id: '9',
+        title: 'Design our website',
+        start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 8, 30),
+        end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 50),
+        color: '#FFEDD5'
     },
     {
-        id: 9,
-        title: 'Weekend Prep',
-        startTime: '17:00',
-        endTime: '18:00',
-        dayIndex: 5, // Friday
-        color: 'pink',
-        attendees: ['/assets/images/avatar-1.png', '/assets/images/avatar-2.png'],
-        widthPercent: 100,
-        leftPercent: 0,
+        id: '10',
+        title: 'New project',
+        start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 45),
+        end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 12, 30),
+        color: '#DBEAFE',
+        extendedProps: {
+            description: 'Clients Brief'
+        }
     },
     {
-        id: 10,
-        title: 'Personal Project',
-        startTime: '10:00',
-        endTime: '14:00',
-        dayIndex: 6, // Saturday
-        color: 'yellow',
-        widthPercent: 100,
-        leftPercent: 0,
+        id: '11',
+        title: 'Unboarding meet',
+        start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 50),
+        end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 12, 0),
+        color: '#FBCFE8',
+        extendedProps: {
+            attendees: [
+                { id: '7', name: 'User 7', avatar: 'assets/images/avatar2.jpg' },
+                { id: '8', name: 'User 8', avatar: 'assets/images/avatar1.jpg' }
+            ]
+        }
     },
-]; 
+    {
+        id: '12',
+        title: 'Meet with Jonson Rider',
+        start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 6, 0),
+        end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 7, 0),
+        color: '#F3E8FF',
+        extendedProps: {
+            location: 'Park Lane Office'
+        }
+    }
+];
