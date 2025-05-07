@@ -1,0 +1,17 @@
+---
+import { Checkbox } from "@/components/ui/checkbox";
+
+
+export interface Props {
+  task: string;
+}
+
+const { task } = Astro.props;
+---
+
+
+
+<div class="flex flex-row items-center py-1">
+    <Checkbox className="text-white"/>
+    <div class="text-white text-base px-2">{task}</div>
+</div>

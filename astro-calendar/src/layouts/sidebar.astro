@@ -2,6 +2,7 @@
 // Sidebar component for Astro Calendar
 import { AvatarComponent } from "@/components/ui/avatar_component";
 import { Calendar } from "@/components/ui/calendar";
+import TodoList from "@/layouts/todolist.astro";
 ---
 
 <div class="w-1/5">
@@ -38,4 +39,6 @@ import { Calendar } from "@/components/ui/calendar";
       className="flex flex-row justify-center items-center text-white"
     />
   </div>
+  <div class="p-2"></div>
+  <TodoList />
 </div> 
