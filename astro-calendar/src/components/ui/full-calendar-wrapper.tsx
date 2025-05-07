@@ -42,7 +42,6 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
     const [currentView, setCurrentView] = useState<string>('timeGridWeek');
     const calendarRef = useRef<any>(null);
 
-    // Écouter les événements personnalisés depuis Astro
     useEffect(() => {
         const handlePrev = () => {
             if (calendarRef.current) {
@@ -156,10 +155,15 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
         }
 
         return (
-            <div className={`event-content p-2 h-full overflow-hidden flex flex-col ${eventClass}`}>
-                <div className="text-sm font-medium">{eventInfo.event.title}</div>
+            <div className={`event-content p-3 h-full overflow-hidden flex flex-col ${eventClass}`}>
+                <div className="text-sm font-medium text-black">
+                    <span>{eventInfo.event.title}</span>
+                </div>
+                <div className="text-sm font-medium text-gray-500">
+                    <span>{eventInfo.event.start?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - {eventInfo.event.end?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
                 {eventInfo.event.extendedProps?.location && (
-                    <div className="text-xs mt-1 flex items-center">
+                    <div className="text-xs mt-1 flex items-center text-gray-500">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
@@ -169,7 +173,7 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
                 {eventInfo.event.extendedProps?.attendees && eventInfo.event.extendedProps.attendees.length > 0 && (
                     <div className="flex mt-2 -space-x-1">
                         {eventInfo.event.extendedProps.attendees.map((attendee: any, index: number) => (
-                            <div key={index} className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
+                            <div key={index} className="w-6 h-6 rounded-full border-1 border-white overflow-hidden">
                                 {attendee.avatar ? (
                                     <img src={attendee.avatar} alt={attendee.name} className="w-full h-full object-cover" />
                                 ) : (

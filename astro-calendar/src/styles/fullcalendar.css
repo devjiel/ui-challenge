@@ -101,7 +101,7 @@
 }
 
 .fc .fc-timegrid-slot {
-  height: 48px !important;
+  height: 4rem !important;
   border: none !important;
 }
 
@@ -110,16 +110,21 @@
 }
 
 .fc .fc-timegrid-axis {
-  padding-right: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
   color: #666;
   font-family: "Outfit", sans-serif;
 }
 
-/* Application de la police Outfit pour tous les labels d'heures */
+.fc .fc-timegrid-slot-label-cushion {
+  padding-right: 2rem !important;
+  padding-left: 1rem !important;
+}
+
 .fc .fc-timegrid-slot-label {
   font-family: "Outfit", sans-serif;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 /* S'assurer que les heures en en-tête utilisent aussi la police Outfit */
