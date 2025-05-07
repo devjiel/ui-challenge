@@ -261,7 +261,7 @@
   display: block;
   width: 24px;
   height: 24px;
-  background-image: url("/assets/icons/add.svg"); /* Place your add icon here */
+  background-image: url("/assets/icons/add.svg");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
