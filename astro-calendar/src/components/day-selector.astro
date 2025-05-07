@@ -1,52 +1,69 @@
 ---
+import { currentCalendarDate, goToToday, goToPreviousPeriod, goToNextPeriod } from '../stores/calendarDateStore';
+
 export interface Props {
   selectedDate?: Date;
 }
 
+// La `selectedDate` peut être utilisée pour l'affichage initial, mais le store est désormais l'autorité
 const { selectedDate = new Date() } = Astro.props;
+
+// On peut initialiser le store avec la date passée en prop si nécessaire
+if (selectedDate && selectedDate.getTime() !== currentCalendarDate.get().getTime()) {
+  currentCalendarDate.set(selectedDate);
+}
 ---
 
 <div class="flex flex-row gap-2">
-    <div 
-      class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center cursor-pointer hover:bg-gray-200" 
-      onclick="window.dispatchEvent(new CustomEvent('calendar-prev'))"
+    <button 
+      id="prev-button"
+      class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center cursor-pointer hover:bg-gray-200"
     >
-        <img class="w-4 h-4" src="assets/icons/arrow-left.svg" alt="arrow-left" />
-    </div>
-    <div 
+        <img class="w-4 h-4" src="/assets/icons/arrow-left.svg" alt="arrow-left" />
+    </button>
+    <button 
+      id="today-button"
       class="bg-gray-100 rounded-xl px-8 py-3 flex items-center justify-center cursor-pointer hover:bg-gray-200"
-      onclick="window.dispatchEvent(new CustomEvent('calendar-today'))"
     >
         <div class="text-base font-bold">Today</div>
-    </div>
-    <div 
+    </button>
+    <button 
+      id="next-button"
       class="bg-gray-100 rounded-xl p-2 w-12 h-12 flex items-center justify-center cursor-pointer hover:bg-gray-200"
-      onclick="window.dispatchEvent(new CustomEvent('calendar-next'))"
     >
-        <img class="w-4 h-4" src="assets/icons/arrow-right.svg" alt="arrow-right" />
-    </div>
+        <img class="w-4 h-4" src="/assets/icons/arrow-right.svg" alt="arrow-right" />
+    </button>
 </div>
 
-<script is:inline>
-  // Ajouter les événements calendar-prev, calendar-today, calendar-next
+<script>
+  // Importation côté client des fonctions du store
+  import { goToToday, goToPreviousPeriod, goToNextPeriod } from '../stores/calendarDateStore';
+
   document.addEventListener('DOMContentLoaded', function() {
-    const prevButton = document.querySelector('[onclick*="calendar-prev"]');
-    const todayButton = document.querySelector('[onclick*="calendar-today"]');
-    const nextButton = document.querySelector('[onclick*="calendar-next"]');
+    // Utilisation de getElementById est plus précise que querySelector quand on a des IDs
+    const prevButton = document.getElementById('prev-button');
+    const todayButton = document.getElementById('today-button');
+    const nextButton = document.getElementById('next-button');
     
-    prevButton.addEventListener('click', function() {
-      const event = new CustomEvent('astro:calendar-prev');
-      window.dispatchEvent(event);
-    });
+    if (prevButton) {
+      prevButton.addEventListener('click', function() {
+        // Appel direct à la fonction du store au lieu d'émettre un événement
+        goToPreviousPeriod();
+      });
+    }
     
-    todayButton.addEventListener('click', function() {
-      const event = new CustomEvent('astro:calendar-today');
-      window.dispatchEvent(event);
-    });
+    if (todayButton) {
+      todayButton.addEventListener('click', function() {
+        // Appel direct à la fonction du store
+        goToToday();
+      });
+    }
     
-    nextButton.addEventListener('click', function() {
-      const event = new CustomEvent('astro:calendar-next');
-      window.dispatchEvent(event);
-    });
+    if (nextButton) {
+      nextButton.addEventListener('click', function() {
+        // Appel direct à la fonction du store
+        goToNextPeriod();
+      });
+    }
   });
 </script>

@@ -1,4 +1,3 @@
-/* Customizations for FullCalendar */
 .fc {
   font-family: "Outfit", system-ui, -apple-system, sans-serif;
   --fc-border-color: transparent;
@@ -12,30 +11,22 @@
   overflow: hidden;
 }
 
-/* Cacher les scrollbars tout en conservant la fonctionnalité de défilement */
-.fc-scroller {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.fc-scroller::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
-}
-
-/* Assurer que les conteneurs de défilement spécifiques sont également ciblés */
+/* Hide scrollbars but keep scroll functionality */
+.fc-scroller,
 .fc-timegrid-body,
 .fc-daygrid-body,
 .fc-list-table,
 .fc-scrollgrid-sync-inner {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
+.fc-scroller::-webkit-scrollbar,
 .fc-timegrid-body::-webkit-scrollbar,
 .fc-daygrid-body::-webkit-scrollbar,
 .fc-list-table::-webkit-scrollbar,
 .fc-scrollgrid-sync-inner::-webkit-scrollbar {
-  display: none;
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .fc .fc-toolbar {
@@ -100,12 +91,9 @@
   border-radius: 6px;
 }
 
-.fc .fc-timegrid-slot {
-  height: 4rem !important;
-  border: none !important;
-}
-
+.fc .fc-timegrid-slot,
 .fc .fc-timegrid-slot-minor {
+  height: 4rem !important;
   border: none !important;
 }
 
@@ -125,14 +113,11 @@
   font-family: "Outfit", sans-serif;
   margin-top: 8px;
   margin-bottom: 8px;
+  vertical-align: top;
 }
 
-/* S'assurer que les heures en en-tête utilisent aussi la police Outfit */
-.fc .fc-col-header-cell {
-  font-family: "Outfit", sans-serif;
-}
-
-/* S'assurer que tous les textes liés au temps utilisent Outfit */
+/* Ensure header hours use Outfit font */
+.fc .fc-col-header-cell,
 .fc-timegrid-axis-cushion,
 .fc-timegrid-slot-label-cushion,
 .fc-col-header-cell-cushion {
@@ -140,14 +125,8 @@
 }
 
 .fc-theme-standard td,
-.fc-theme-standard th {
-  border: none !important;
-}
-
-.fc-scrollgrid {
-  border: none !important;
-}
-
+.fc-theme-standard th,
+.fc-scrollgrid,
 .fc-scrollgrid-section > * {
   border: none !important;
 }
@@ -174,27 +153,21 @@
 .event-booking {
   background-color: #dbeafe;
 }
-
 .event-design {
   background-color: #d1fae5;
 }
-
 .event-development {
   background-color: #e5e7eb;
 }
-
 .event-meeting {
   background-color: #fef3c7;
 }
-
 .event-planning {
   background-color: #e0e7ff;
 }
-
 .event-review {
   background-color: #ffedd5;
 }
-
 .event-other {
   background-color: #fde68a;
 }
@@ -206,11 +179,8 @@
   border-radius: 50%;
 }
 
-/* Masquer complètement l'indicateur de l'heure courante */
-.fc-timegrid-now-indicator-line {
-  display: none !important;
-}
-
+/* Hide current time indicator completely */
+.fc-timegrid-now-indicator-line,
 .fc-timegrid-now-indicator-arrow {
   display: none !important;
 }

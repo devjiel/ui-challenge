@@ -14,7 +14,7 @@ export const demoEvents = [
         title: 'Booking taxi app',
         start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 6, 0),
         end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 7, 30),
-        color: '#DBEAFE',
+        color: "blue",
         extendedProps: {
             attendees: [
                 { id: '1', name: 'User 1', avatar: 'assets/images/avatar1.jpg' },
@@ -28,36 +28,28 @@ export const demoEvents = [
         title: 'Design onboarding',
         start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0),
         end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 10),
-        color: '#D1FAE5'
+        color: "green"
     },
     {
         id: '3',
         title: 'Development meet',
         start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
         end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0),
-        color: '#E5E7EB'
-    },
-    // Événements pour demain
-    {
-        id: '4',
-        title: 'Development meet',
-        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 8, 40),
-        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0),
-        color: '#E5E7EB'
+        color: "pink"
     },
     {
         id: '5',
         title: 'Book offsite',
         start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 7, 30),
         end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0),
-        color: '#E5E7EB'
+        color: "purple"
     },
     {
         id: '6',
         title: 'Design session',
         start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 7, 50),
         end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 30),
-        color: '#FEF3C7',
+        color: "yellow",
         extendedProps: {
             attendees: [
                 { id: '4', name: 'User 4', avatar: 'assets/images/avatar1.jpg' },
@@ -71,7 +63,7 @@ export const demoEvents = [
         title: 'Design Review',
         start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 40),
         end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 30),
-        color: '#DBEAFE'
+        color: "blue"
     },
     // Événements pour dans trois jours
     {
@@ -79,21 +71,21 @@ export const demoEvents = [
         title: 'Planning tasks',
         start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 7, 50),
         end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 8, 30),
-        color: '#E0E7FF'
+        color: "purple"
     },
     {
         id: '9',
         title: 'Design our website',
         start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 8, 30),
         end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 50),
-        color: '#FFEDD5'
+        color: "yellow"
     },
     {
         id: '10',
         title: 'New project',
         start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 45),
         end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 12, 30),
-        color: '#DBEAFE',
+        color: "blue",
         extendedProps: {
             description: 'Clients Brief'
         }
@@ -103,7 +95,7 @@ export const demoEvents = [
         title: 'Unboarding meet',
         start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 10, 50),
         end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 12, 0),
-        color: '#FBCFE8',
+        color: "pink",
         extendedProps: {
             attendees: [
                 { id: '7', name: 'User 7', avatar: 'assets/images/avatar2.jpg' },
@@ -116,7 +108,7 @@ export const demoEvents = [
         title: 'Meet with Jonson Rider',
         start: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 6, 0),
         end: new Date(inThreeDays.getFullYear(), inThreeDays.getMonth(), inThreeDays.getDate(), 7, 0),
-        color: '#F3E8FF',
+        color: "purple",
         extendedProps: {
             location: 'Park Lane Office'
         }

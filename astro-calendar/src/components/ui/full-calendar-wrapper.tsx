@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
-import type { EventClickArg, DateSelectArg } from '@fullcalendar/core';
+import type { EventClickArg, DateSelectArg, EventContentArg } from '@fullcalendar/core';
 import '../../styles/fullcalendar.css';
+import EventDetailPopupCard from './EventDetailPopupCard';
+import EventCard from './EventCard';
+import { currentCalendarView, setCalendarView, type CalendarView } from '../../stores/calendarViewStore';
+import { currentCalendarDate, setCalendarDate } from '../../stores/calendarDateStore';
 
 interface Event {
     id: string;
@@ -21,13 +25,6 @@ interface Event {
     };
 }
 
-// Interface pour l'événement personnalisé
-interface ViewChangeEvent extends CustomEvent {
-    detail: {
-        value: string;
-    };
-}
-
 export interface FullCalendarProps {
     initialEvents?: Event[];
     onEventClick?: (event: Event) => void;
@@ -38,16 +35,100 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
     const [events, setEvents] = useState<Event[]>(initialEvents);
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [currentView, setCurrentView] = useState<string>('timeGridWeek');
+    const [selectedDate, setSelectedDate] = useState<Date>(currentCalendarDate.get());
+    const [currentView, setCurrentView] = useState<string>(mapCalendarViewToFullCalendarView(currentCalendarView.get()));
     const calendarRef = useRef<any>(null);
+    const [cardPosition, setCardPosition] = useState<{ top: number; left: number; side: 'left' | 'right' } | null>(null);
+    const cardRef = useRef<HTMLDivElement | null>(null);
+
+    const isUpdatingFromStore = useRef(false);
+    const isUpdatingFromCalendar = useRef(false);
+
+    const colorNameToTailwindClass: Record<string, string> = {
+        blue: "bg-[var(--color-blue-custom)]",
+        green: "bg-[var(--color-green-custom)]",
+        yellow: "bg-[var(--color-yellow-custom)]",
+        purple: "bg-[var(--color-purple-custom)]",
+        pink: "bg-[var(--color-pink-custom)]",
+        test: "bg-[var(--color-test)]",
+    };
+
+    const getEventLocation = (event: Event) => {
+        if (event.extendedProps) {
+            if (typeof event.extendedProps.location === 'string') {
+                return event.extendedProps.location;
+            }
+            if (event.extendedProps.location === null) {
+                return null;
+            }
+        }
+        return Math.random() > 0.5 ? 'Park Lane Office' : null;
+    };
+
+    const processedEvents = useMemo(() => {
+        return events.map(event => ({
+            ...event,
+            extendedProps: {
+                ...(event.extendedProps || {}),
+                attendees: event.extendedProps?.attendees,
+                description: event.extendedProps?.description,
+                location: getEventLocation(event)
+            }
+        }));
+    }, [events]);
+
+    function mapCalendarViewToFullCalendarView(view: CalendarView): string {
+        switch (view) {
+            case 'month': return 'dayGridMonth';
+            case 'week': return 'timeGridWeek';
+            case 'day': return 'timeGridDay';
+            default: return 'timeGridWeek';
+        }
+    }
 
     useEffect(() => {
-        const handlePrev = () => {
+        const unsubscribe = currentCalendarDate.subscribe((newDate) => {
+            if (isUpdatingFromCalendar.current) {
+                return;
+            }
+
+            setSelectedDate(newDate);
+
+            isUpdatingFromStore.current = true;
+
+            if (calendarRef.current) {
+                const api = calendarRef.current.getApi();
+                api.gotoDate(newDate);
+            }
+
+            setTimeout(() => {
+                isUpdatingFromStore.current = false;
+            }, 10);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = currentCalendarView.subscribe((newView) => {
+            const fullCalendarView = mapCalendarViewToFullCalendarView(newView);
+            setCurrentView(fullCalendarView);
+
+            if (calendarRef.current) {
+                const api = calendarRef.current.getApi();
+                api.changeView(fullCalendarView);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const handlePrevious = () => {
             if (calendarRef.current) {
                 const api = calendarRef.current.getApi();
                 api.prev();
-                setSelectedDate(api.getDate());
+                setCalendarDate(api.getDate());
             }
         };
 
@@ -55,40 +136,87 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
             if (calendarRef.current) {
                 const api = calendarRef.current.getApi();
                 api.next();
-                setSelectedDate(api.getDate());
+                setCalendarDate(api.getDate());
             }
         };
 
-        const handleToday = () => {
-            if (calendarRef.current) {
-                const api = calendarRef.current.getApi();
-                api.today();
-                setSelectedDate(api.getDate());
-            }
-        };
-
-        const handleViewChange = (e: CustomEvent<{ value: string }>) => {
-            if (e.detail && e.detail.value) {
-                const view = e.detail.value;
-                handleViewChangeInternal(view);
-            }
-        };
-
-        window.addEventListener('astro:calendar-prev', handlePrev);
+        window.addEventListener('calendar:go-previous', handlePrevious);
+        window.addEventListener('calendar:go-next', handleNext);
+        window.addEventListener('astro:calendar-prev', handlePrevious);
         window.addEventListener('astro:calendar-next', handleNext);
-        window.addEventListener('astro:calendar-today', handleToday);
-        window.addEventListener('toggle-group:value-change', handleViewChange as EventListener);
+        window.addEventListener('astro:calendar-today', () => { });
+        window.addEventListener('toggle-group:value-change', ((e: CustomEvent<{ value: string }>) => {
+            if (e.detail && e.detail.value) {
+                const view = e.detail.value as CalendarView;
+                setCalendarView(view);
+            }
+        }) as EventListener);
 
         return () => {
-            window.removeEventListener('astro:calendar-prev', handlePrev);
+            window.removeEventListener('calendar:go-previous', handlePrevious);
+            window.removeEventListener('calendar:go-next', handleNext);
+            window.removeEventListener('astro:calendar-prev', handlePrevious);
             window.removeEventListener('astro:calendar-next', handleNext);
-            window.removeEventListener('astro:calendar-today', handleToday);
-            window.removeEventListener('toggle-group:value-change', handleViewChange as EventListener);
+            window.removeEventListener('astro:calendar-today', () => { });
+            window.removeEventListener('toggle-group:value-change', ((e: CustomEvent<any>) => { }) as EventListener);
         };
     }, []);
 
+    useEffect(() => {
+        if (!showEventModal) return;
+        function handleClickOutside(event: MouseEvent) {
+            if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
+                setShowEventModal(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showEventModal]);
+
     const handleEventClick = (clickInfo: EventClickArg) => {
-        setSelectedEvent(clickInfo.event.toPlainObject() as unknown as Event);
+        const eventData = clickInfo.event.toPlainObject() as unknown as Event;
+        setSelectedEvent(eventData);
+
+        if (!clickInfo.el) {
+            setShowEventModal(false);
+            setCardPosition(null);
+            return;
+        }
+        const eventRect = clickInfo.el.getBoundingClientRect();
+
+        const calendarApi = calendarRef.current?.getApi();
+        const calendarElement = calendarApi?.el;
+
+        if (!calendarElement) {
+            setShowEventModal(false);
+            setCardPosition(null);
+            return;
+        }
+        const calendarRect = calendarElement.getBoundingClientRect();
+
+        const eventMidPoint = eventRect.left + eventRect.width / 2;
+        const viewPortMidPoint = window.innerWidth / 2;
+        const side: 'left' | 'right' = eventMidPoint < viewPortMidPoint ? 'right' : 'left';
+
+        let cardLeftPosition: number;
+        const cardWidth = 320;
+        const margin = 8;
+
+        if (side === 'right') {
+            cardLeftPosition = (eventRect.right - calendarRect.left) + margin;
+        } else {
+            cardLeftPosition = (eventRect.left - calendarRect.left) - cardWidth - margin;
+        }
+
+        const newCardPosition = {
+            top: eventRect.top - calendarRect.top,
+            left: cardLeftPosition,
+            side,
+        };
+
+        setCardPosition(newCardPosition);
         setShowEventModal(true);
 
         if (onEventClick) {
@@ -102,95 +230,39 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
         }
     };
 
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date);
-        if (calendarRef.current) {
-            const api = calendarRef.current.getApi();
-            api.gotoDate(date);
-        }
-    };
-
-    const handleViewChangeInternal = (view: string) => {
-        let fullCalendarView = 'timeGridWeek';
-        if (view === 'month') {
-            fullCalendarView = 'dayGridMonth';
-        } else if (view === 'week') {
-            fullCalendarView = 'timeGridWeek';
-        } else if (view === 'day') {
-            fullCalendarView = 'timeGridDay';
-        }
-
-        setCurrentView(fullCalendarView);
-        if (calendarRef.current) {
-            const api = calendarRef.current.getApi();
-            api.changeView(fullCalendarView);
-        }
-
-        // Émettre un événement pour informer les autres composants
-        const viewChangeEvent = new CustomEvent('fullcalendar:view-change', {
-            detail: {
-                view: view,
-                fcView: fullCalendarView
-            }
-        });
-        window.dispatchEvent(viewChangeEvent);
-    };
-
-    const renderEventContent = (eventInfo: any) => {
-        let eventClass = 'event-other';
+    const renderEventContent = (eventInfo: EventContentArg) => {
         const title = eventInfo.event.title.toLowerCase();
-
+        let eventClassBasedOnTitle = 'event-other';
         if (title.includes('booking') || title.includes('réservation')) {
-            eventClass = 'event-booking';
+            eventClassBasedOnTitle = 'event-booking';
         } else if (title.includes('design')) {
-            eventClass = 'event-design';
+            eventClassBasedOnTitle = 'event-design';
         } else if (title.includes('development') || title.includes('développement')) {
-            eventClass = 'event-development';
+            eventClassBasedOnTitle = 'event-development';
         } else if (title.includes('meeting') || title.includes('réunion')) {
-            eventClass = 'event-meeting';
+            eventClassBasedOnTitle = 'event-meeting';
         } else if (title.includes('planning') || title.includes('planification')) {
-            eventClass = 'event-planning';
+            eventClassBasedOnTitle = 'event-planning';
         } else if (title.includes('review') || title.includes('revue')) {
-            eventClass = 'event-review';
+            eventClassBasedOnTitle = 'event-review';
+        }
+
+        const colorName = eventInfo.event.extendedProps?.color || eventInfo.event.backgroundColor || eventInfo.event.borderColor;
+
+        let backgroundColorClass = '';
+        if (typeof colorName === 'string' && colorNameToTailwindClass[colorName]) {
+            backgroundColorClass = colorNameToTailwindClass[colorName];
+        } else {
+            backgroundColorClass = 'bg-gray-100';
         }
 
         return (
-            <div className={`event-content p-3 h-full overflow-hidden flex flex-col ${eventClass}`}>
-                <div className="text-sm font-medium text-black">
-                    <span>{eventInfo.event.title}</span>
-                </div>
-                <div className="text-sm font-medium text-gray-500">
-                    <span>{eventInfo.event.start?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - {eventInfo.event.end?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                {eventInfo.event.extendedProps?.location && (
-                    <div className="text-xs mt-1 flex items-center text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        {eventInfo.event.extendedProps.location}
-                    </div>
-                )}
-                {eventInfo.event.extendedProps?.attendees && eventInfo.event.extendedProps.attendees.length > 0 && (
-                    <div className="flex mt-2 -space-x-1">
-                        {eventInfo.event.extendedProps.attendees.map((attendee: any, index: number) => (
-                            <div key={index} className="w-6 h-6 rounded-full border-1 border-white overflow-hidden">
-                                {attendee.avatar ? (
-                                    <img src={attendee.avatar} alt={attendee.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
-                                        {attendee.name.charAt(0)}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+            <EventCard event={eventInfo.event} backgroundColorClass={backgroundColorClass} />
         );
     };
 
     return (
-        <div className="calendar-container h-full flex flex-col">
+        <div className="calendar-container h-full flex flex-col relative">
             <div className="flex-1 bg-gray-100">
                 <FullCalendar
                     ref={calendarRef}
@@ -203,14 +275,7 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
                     selectMirror={true}
                     dayMaxEvents={true}
                     weekends={true}
-                    events={events.map(event => ({
-                        ...event,
-                        extendedProps: {
-                            ...(event.extendedProps || {}),
-                            attendees: event.extendedProps?.attendees,
-                            location: event.extendedProps?.location || (Math.random() > 0.5 ? 'Park Lane Office' : null)
-                        }
-                    }))}
+                    events={processedEvents}
                     locale={frLocale}
                     eventContent={renderEventContent}
                     eventClick={handleEventClick}
@@ -235,83 +300,49 @@ export default function FullCalendarWrapper({ initialEvents = [], onEventClick, 
                         hour12: false
                     }}
                     datesSet={(dateInfo) => {
-                        setSelectedDate(dateInfo.start);
+                        if (isUpdatingFromStore.current) {
+                            return;
+                        }
 
-                        // Émettre un événement pour informer le composant Astro du changement de date
-                        const dateChangeEvent = new CustomEvent('fullcalendar:date-change', {
-                            detail: { date: dateInfo.start }
-                        });
-                        window.dispatchEvent(dateChangeEvent);
+                        isUpdatingFromCalendar.current = true;
 
-                        // Mettre à jour la vue si elle a changé
+                        setCalendarDate(dateInfo.start);
+
                         if (currentView !== dateInfo.view.type) {
                             setCurrentView(dateInfo.view.type);
 
-                            // Convertir la vue FullCalendar en format simple
                             const simpleView = dateInfo.view.type === 'dayGridMonth'
                                 ? 'month'
                                 : (dateInfo.view.type === 'timeGridWeek' ? 'week' : 'day');
 
-                            // Émettre un événement pour informer le composant Astro du changement de vue
-                            const viewChangeEvent = new CustomEvent('fullcalendar:view-change', {
-                                detail: {
-                                    view: simpleView,
-                                    fcView: dateInfo.view.type
-                                }
-                            });
-                            window.dispatchEvent(viewChangeEvent);
+                            setCalendarView(simpleView as CalendarView);
                         }
+
+                        setTimeout(() => {
+                            isUpdatingFromCalendar.current = false;
+                        }, 10);
                     }}
                     dayHeaders={false}
                 />
             </div>
 
-            {showEventModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-                        <h2 className="text-xl font-semibold mb-4">Meet with {selectedEvent?.title.split(' ').pop()}</h2>
-
-                        <div className="space-y-4">
-                            <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <div>Tuesday, 18 December</div>
-                            </div>
-
-                            <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <div>06:00 - 07:00</div>
-                            </div>
-
-                            <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <div>Park Lane Office</div>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 space-x-2">
-                            <button className="px-4 py-2 bg-black text-white rounded-md">Add Event</button>
-                            <button
-                                className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md"
-                                onClick={() => setShowEventModal(false)}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-25 -z-10"
-                        onClick={() => setShowEventModal(false)}
-                    ></div>
-                </div>
-            )}
+            {(() => {
+                if (showEventModal && cardPosition && selectedEvent) {
+                    return (
+                        <EventDetailPopupCard
+                            event={selectedEvent}
+                            cardPosition={cardPosition}
+                            cardRef={cardRef}
+                            onClose={() => setShowEventModal(false)}
+                            onDelete={() => {
+                                setEvents(events.filter(event => event.id !== selectedEvent.id));
+                                setShowEventModal(false);
+                            }}
+                        />
+                    );
+                }
+                return null;
+            })()}
         </div>
     );
 } 

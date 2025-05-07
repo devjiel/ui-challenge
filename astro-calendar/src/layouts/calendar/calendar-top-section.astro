@@ -1,0 +1,44 @@
+---
+import { ReactToggleGroup } from "@/components/ui/react-toggle-group";
+import CalendarBanner from "@/components/ui/CalendarBanner";
+import DaySelector from "@/components/day-selector.astro";
+import { currentCalendarView, setCalendarView, type CalendarView } from '@/stores/calendarViewStore';
+
+export interface Props {
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
+  initialView?: CalendarView;
+}
+
+const { 
+  selectedDate = new Date(),
+  initialView 
+} = Astro.props;
+
+if (initialView && initialView !== currentCalendarView.get()) {
+  setCalendarView(initialView);
+}
+
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const month = monthNames[selectedDate.getMonth()];
+const year = selectedDate.getFullYear();
+const formattedDate = `${month}, ${year}`;
+---
+
+<div class="p-6 flex-col">
+    <div class="flex flex-row justify-between items-center">
+        <div class="text-2xl font-normal">{formattedDate}</div>
+        <ReactToggleGroup client:load/>
+        <DaySelector selectedDate={selectedDate} />
+    </div>
+    <div class="p-4"></div>
+    <div class="flex gap-4 justify-between">
+        <img
+            src="/assets/icons/calendar-03.svg"
+            alt="calendar"
+            class="pl-2 pr-6"
+        />
+
+        <CalendarBanner client:load />
+    </div>
+</div>

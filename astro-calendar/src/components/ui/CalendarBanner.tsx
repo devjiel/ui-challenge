@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DayCard } from './day-card';
-
-interface CalendarBannerProps {
-  week?: Date;
-}
+import { useStore } from '@nanostores/react';
+import { currentCalendarDate, setCalendarDate } from '../../stores/calendarDateStore';
+import { currentCalendarView, setCalendarView, type CalendarView } from '../../stores/calendarViewStore';
 
 /**
  * Displays a banner with calendar information based on selected view:
@@ -12,30 +11,26 @@ interface CalendarBannerProps {
  * - Day view: Shows the selected day in large format
  * The current day is highlighted
  */
-export function CalendarBanner({
-  week = new Date(),
-}: CalendarBannerProps) {
+export default function CalendarBanner() {
+  // Use nanostores for current date and view
+  const currentDate = useStore(currentCalendarDate);
+  const view = useStore(currentCalendarView);
   const [days, setDays] = useState<{ day: string; date: string; isCurrentDay: boolean }[]>([]);
-  const [view, setView] = useState<string>('week');
-  const [currentDate, setCurrentDate] = useState<Date>(week);
   const [shouldResetToToday, setShouldResetToToday] = useState<boolean>(true);
 
   // Listen for toggle group value changes
   useEffect(() => {
     const handleToggleChange = (e: CustomEvent) => {
       if (e.detail && e.detail.value) {
-        const newView = e.detail.value;
-        setView(newView);
-
+        const newView = e.detail.value as CalendarView;
+        setCalendarView(newView);
         // If switching to day view, set the date to today if shouldResetToToday is true
         if (newView === 'day' && shouldResetToToday) {
-          setCurrentDate(new Date());
+          setCalendarDate(new Date());
         }
       }
     };
-
     window.addEventListener('toggle-group:value-change', handleToggleChange as EventListener);
-
     return () => {
       window.removeEventListener('toggle-group:value-change', handleToggleChange as EventListener);
     };
@@ -44,56 +39,26 @@ export function CalendarBanner({
   // Listen for day selector navigation events
   useEffect(() => {
     const handlePrev = () => {
-      // When user manually navigates, we should not reset to today anymore
       setShouldResetToToday(false);
-
-      setCurrentDate(prevDate => {
-        const newDate = new Date(prevDate);
-        if (view === 'day') {
-          newDate.setDate(newDate.getDate() - 1);
-        } else if (view === 'week') {
-          newDate.setDate(newDate.getDate() - 7);
-        } else if (view === 'month') {
-          newDate.setMonth(newDate.getMonth() - 1);
-        }
-        return newDate;
-      });
+      setCalendarDate(getPrevDate(currentDate, view));
     };
-
     const handleNext = () => {
-      // When user manually navigates, we should not reset to today anymore
       setShouldResetToToday(false);
-
-      setCurrentDate(prevDate => {
-        const newDate = new Date(prevDate);
-        if (view === 'day') {
-          newDate.setDate(newDate.getDate() + 1);
-        } else if (view === 'week') {
-          newDate.setDate(newDate.getDate() + 7);
-        } else if (view === 'month') {
-          newDate.setMonth(newDate.getMonth() + 1);
-        }
-        return newDate;
-      });
+      setCalendarDate(getNextDate(currentDate, view));
     };
-
     const handleToday = () => {
-      // Reset the flag when we go back to today
       setShouldResetToToday(true);
-      setCurrentDate(new Date());
+      setCalendarDate(new Date());
     };
-
-    // Add event listeners for calendar navigation
     window.addEventListener('astro:calendar-prev', handlePrev);
     window.addEventListener('astro:calendar-next', handleNext);
     window.addEventListener('astro:calendar-today', handleToday);
-
     return () => {
       window.removeEventListener('astro:calendar-prev', handlePrev);
       window.removeEventListener('astro:calendar-next', handleNext);
       window.removeEventListener('astro:calendar-today', handleToday);
     };
-  }, [view]);
+  }, [view, currentDate]);
 
   // Update days whenever currentDate or view changes
   useEffect(() => {
@@ -106,43 +71,60 @@ export function CalendarBanner({
     }
   }, [currentDate, view]);
 
+  const getPrevDate = (date: Date, view: string) => {
+    const newDate = new Date(date);
+    if (view === 'day') {
+      newDate.setDate(newDate.getDate() - 1);
+    } else if (view === 'week') {
+      newDate.setDate(newDate.getDate() - 7);
+    } else if (view === 'month') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    }
+    return newDate;
+  };
+
+  const getNextDate = (date: Date, view: string) => {
+    const newDate = new Date(date);
+    if (view === 'day') {
+      newDate.setDate(newDate.getDate() + 1);
+    } else if (view === 'week') {
+      newDate.setDate(newDate.getDate() + 7);
+    } else if (view === 'month') {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    return newDate;
+  };
+
   const generateWeekDays = (weekDate: Date) => {
     const startOfWeek = new Date(weekDate);
     const dayOfWeek = startOfWeek.getDay(); // 0 for Sunday, 1 for Monday, etc.
-
     // Set to the first day (Monday) of the week
     // Adjust calculation: 0 (Sunday) should become 6, all other days shift by -1
     const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     startOfWeek.setDate(startOfWeek.getDate() - daysToSubtract);
-
     // Get today's date for comparison
     const now = new Date();
     const currentDay = now.getDate();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-
     const weekDays = [];
-
     // Create array with the 7 days of the week, starting from Monday
     for (let i = 0; i < 7; i++) {
       // Create a new date object for each day to avoid reference issues
       const currentDate = new Date(startOfWeek);
       // Add the correct number of days
       currentDate.setDate(startOfWeek.getDate() + i);
-
       // Simple direct comparison of year, month, and day
       const isCurrentDay =
         currentDate.getDate() === currentDay &&
         currentDate.getMonth() === currentMonth &&
         currentDate.getFullYear() === currentYear;
-
       weekDays.push({
         day: new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(currentDate),
         date: currentDate.getDate().toString(),
         isCurrentDay
       });
     }
-
     setDays(weekDays);
   };
 
@@ -183,7 +165,6 @@ export function CalendarBanner({
                 day={day.day}
                 date={day.date}
                 isSelected={day.isCurrentDay}
-              // No onClick handler since these are not clickable
               />
             ))}
           </div>

@@ -1,78 +1,49 @@
-import { ToggleGroup, ToggleGroupItem } from './toggle-group';
-import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { PeriodToggleGroup, PeriodToggleGroupItem } from './PeriodToggleGroup';
+import { currentCalendarView, setCalendarView, type CalendarView } from '../../stores/calendarViewStore';
+import { setCalendarDate } from '../../stores/calendarDateStore';
 
-interface ReactToggleGroupProps {
-  initialValue?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-}
+interface ReactToggleGroupProps { }
 
-export function ReactToggleGroup({
-  initialValue,
-  defaultValue = "week",
-  onValueChange
-}: ReactToggleGroupProps) {
-  const [value, setValue] = useState(initialValue || defaultValue);
+export function ReactToggleGroup({ }: ReactToggleGroupProps) {
+  const [localView, setLocalView] = React.useState<CalendarView>(currentCalendarView.get());
 
-  // Initialiser un écouteur d'événements pour les changements de vue depuis FullCalendar
-  useEffect(() => {
-    const handleViewChange = (e: CustomEvent) => {
-      if (e.detail && e.detail.view) {
-        setValue(e.detail.view);
-      }
-    };
+  React.useEffect(() => {
+    const unsubscribe = currentCalendarView.subscribe((newView) => {
+      setLocalView(newView);
+    });
 
-    window.addEventListener('fullcalendar:view-change', handleViewChange as EventListener);
-
-    return () => {
-      window.removeEventListener('fullcalendar:view-change', handleViewChange as EventListener);
-    };
+    return () => unsubscribe();
   }, []);
 
-  // Mettre à jour la valeur lorsque initialValue change
-  useEffect(() => {
-    if (initialValue) {
-      setValue(initialValue);
-    }
-  }, [initialValue]);
-
-  // Émettre un événement personnalisé lors du changement de valeur
-  const emitCustomEvent = (val: string) => {
-    console.log('Toggle group value changed to:', val);
-    const event = new CustomEvent('toggle-group:value-change', {
-      detail: { value: val }
-    });
-    window.dispatchEvent(event);
-  };
-
-  // Fonction pour gérer le changement de valeur
   const handleValueChange = (val: string) => {
     if (val) {
-      setValue(val);
-      if (onValueChange) {
-        onValueChange(val);
+      if (val === 'day' || val === 'week' || val === 'month') {
+        setCalendarView(val as CalendarView);
+        setCalendarDate(new Date());
+      } else {
+        console.warn(`ReactToggleGroup received an unexpected value: ${val}`);
       }
-      emitCustomEvent(val);
     }
   };
 
   return (
     <div className="flex flex-row gap-2 bg-gray-100 rounded-xl p-2">
-      <ToggleGroup
+      <PeriodToggleGroup
         type="single"
-        value={value}
+        value={localView}
         onValueChange={handleValueChange}
       >
-        <ToggleGroupItem value="month" aria-label="Toggle month" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 rounded-l-md px-4 py-2 font-medium">
-          <div className={`${value === "month" ? "font-bold" : "font-normal"} text-base px-4`}>Month</div>
-        </ToggleGroupItem>
-        <ToggleGroupItem value="week" aria-label="Toggle week" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 px-4 py-2 font-medium">
-          <div className={`${value === "week" ? "font-bold" : "font-normal"} text-base px-4`}>Week</div>
-        </ToggleGroupItem>
-        <ToggleGroupItem value="day" aria-label="Toggle day" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 rounded-r-md px-4 py-2 font-medium">
-          <div className={`${value === "day" ? "font-bold" : "font-normal"} text-base px-4`}>Day</div>
-        </ToggleGroupItem>
-      </ToggleGroup>
+        <PeriodToggleGroupItem value="month" aria-label="Toggle month" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 rounded-l-md px-4 py-2 font-medium">
+          <div className={`${localView === "month" ? "font-bold" : "font-normal"} text-base px-4`}>Month</div>
+        </PeriodToggleGroupItem>
+        <PeriodToggleGroupItem value="week" aria-label="Toggle week" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 px-4 py-2 font-medium">
+          <div className={`${localView === "week" ? "font-bold" : "font-normal"} text-base px-4`}>Week</div>
+        </PeriodToggleGroupItem>
+        <PeriodToggleGroupItem value="day" aria-label="Toggle day" className="data-[state=on]:bg-white data-[state=on]:shadow-none data-[state=off]:bg-gray-100 hover:bg-gray-200 rounded-r-md px-4 py-2 font-medium">
+          <div className={`${localView === "day" ? "font-bold" : "font-normal"} text-base px-4`}>Day</div>
+        </PeriodToggleGroupItem>
+      </PeriodToggleGroup>
     </div>
   );
 } 

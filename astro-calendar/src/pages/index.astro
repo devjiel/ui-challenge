@@ -3,7 +3,7 @@ import "../styles/global.css";
 import "../styles/fullcalendar.css";
 
 import Sidebar from "@/layouts/sidebar.astro";
-import CalendarHeader from "@/layouts/calendar/calendar-header.astro";
+import CalendarTopSection from "@/layouts/calendar/calendar-top-section.astro";
 import FullCalendarWrapper from "@/components/ui/full-calendar-wrapper.tsx";
 import { demoEvents } from "@/mocks/event-mock";
 // Full Astro Component Syntax:
@@ -36,7 +36,7 @@ const initialView = "week";
 			<div class="p-1"></div>
 			<div class="bg-white rounded-3xl flex flex-col h-full w-full">
 				<div id="calendar-container" class="flex flex-col h-full">
-					<CalendarHeader selectedDate={initialDate} currentView={initialView} />
+					<CalendarTopSection />
 					<div class="py-4"/>
 					<div class="py-6 bg-gray-100"/>
 					<div class="flex-grow">
@@ -47,33 +47,3 @@ const initialView = "week";
 		</div>
 	</body>
 </html>
-
-<script is:inline>
-	// Script pour synchroniser les composants Astro et React
-	document.addEventListener('DOMContentLoaded', function() {
-		// Log des événements pour debug
-		window.addEventListener('fullcalendar:date-change', function(e) {
-			console.log('Calendar date changed:', e.detail);
-		});
-
-		window.addEventListener('fullcalendar:view-change', function(e) {
-			console.log('Calendar view changed:', e.detail);
-		});
-		
-		window.addEventListener('toggle-group:value-change', function(e) {
-			console.log('Toggle group value changed:', e.detail);
-		});
-		
-		window.addEventListener('astro:calendar-prev', function() {
-			console.log('Calendar prev clicked');
-		});
-		
-		window.addEventListener('astro:calendar-next', function() {
-			console.log('Calendar next clicked');
-		});
-		
-		window.addEventListener('astro:calendar-today', function() {
-			console.log('Calendar today clicked');
-		});
-	});
-</script>
