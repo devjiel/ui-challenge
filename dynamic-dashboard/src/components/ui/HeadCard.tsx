@@ -1,7 +1,7 @@
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye } from "lucide-react"
 
-export default function ViewCard({ title, value }: { title: string, value?: string }) {
+export default function HeadCard({ title, value }: { title: string, value?: string }) {
 
     return (
         <Card>

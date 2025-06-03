@@ -1,5 +1,7 @@
 import Header from "@/components/layout/Header";
-import ViewCard from "@/components/ui/ViewCard";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import HeadCard from "@/components/ui/HeadCard";
+
 import {
   Tabs,
   TabsContent,
@@ -14,10 +16,10 @@ export default function Home() {
       <Header />
       <main className="p-6 flex flex-col gap-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ViewCard title="Total Page Views" />
-          <ViewCard title="Active Sessions" />
-          <ViewCard title="Unique Users" />
-          <ViewCard title="Avg. Session Duration" />
+          <HeadCard title="Total Page Views" />
+          <HeadCard title="Active Sessions" />
+          <HeadCard title="Unique Users" />
+          <HeadCard title="Avg. Session Duration" />
         </div>
         <Tabs defaultValue="overview">
           <TabsList>
@@ -26,6 +28,34 @@ export default function Home() {
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
           </TabsList>
+          <TabsContent value="overview">
+            <Card>
+              <CardHeader>
+                <CardTitle>Overview</CardTitle>
+              </CardHeader>
+            </Card>
+          </TabsContent>
+          <TabsContent value="page-views">
+            <Card>
+              <CardHeader>
+                <CardTitle>Page Views</CardTitle>
+              </CardHeader>
+            </Card>
+          </TabsContent>
+          <TabsContent value="sessions">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sessions</CardTitle>
+              </CardHeader>
+            </Card>
+          </TabsContent>
+          <TabsContent value="interactions">
+            <Card>
+              <CardHeader>
+                <CardTitle>Interactions</CardTitle>
+              </CardHeader>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
     </div>
