@@ -5,10 +5,8 @@ export interface Props {
   selectedDate?: Date;
 }
 
-// La `selectedDate` peut être utilisée pour l'affichage initial, mais le store est désormais l'autorité
 const { selectedDate = new Date() } = Astro.props;
 
-// On peut initialiser le store avec la date passée en prop si nécessaire
 if (selectedDate && selectedDate.getTime() !== currentCalendarDate.get().getTime()) {
   currentCalendarDate.set(selectedDate);
 }
