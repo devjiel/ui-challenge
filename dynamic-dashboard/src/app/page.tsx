@@ -21,20 +21,12 @@ export default function Home() {
           <HeadCard title="Unique Users" />
           <HeadCard title="Avg. Session Duration" />
         </div>
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="page-views" className="w-full flex flex-col gap-6">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="page-views">Page Views</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
           </TabsList>
-          <TabsContent value="overview">
-            <Card>
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-              </CardHeader>
-            </Card>
-          </TabsContent>
           <TabsContent value="page-views">
             <Card>
               <CardHeader>
