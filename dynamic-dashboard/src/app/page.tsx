@@ -1,3 +1,5 @@
+'use client'
+
 import Header from "@/components/layout/Header";
 import HeadCard from "@/components/ui/HeadCard";
 import PageViewTable from "@/components/ui/tables/PageViewsCard";
@@ -11,9 +13,17 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { Activity, Clock4, Eye, Users } from "lucide-react";
+import { useEffect } from "react";
 
 
 export default function Home() {
+  useEffect(() => {
+    fetch('/api/seed')
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error seeding:', error))
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
