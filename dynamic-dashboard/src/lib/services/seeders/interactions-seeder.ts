@@ -83,7 +83,7 @@ class InteractionsSeeder {
     async seed() {
         try {
             const count = await getInteractionsCount()
-            if (count >= 1000) {
+            if (count >= 100) {
                 this.stop()
                 return
             }

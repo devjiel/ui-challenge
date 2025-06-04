@@ -101,7 +101,7 @@ class PageViewsSeeder {
     async seed() {
         try {
             const count = await getPageViewsCount()
-            if (count >= 1000) {
+            if (count >= 100) {
                 this.stop()
                 return
             }
