@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model PageView {
+  id        String @id @default(cuid())
+  pageUrl   String
+  pageTitle String
+  referrer  String
+  viewedAt  DateTime
+
+  @@map("page_views")
+}
+
+model PageSession{
+  id          String @id @default(cuid())
+  sessionId   String
+  userId      String
+  startedAt   DateTime
+  duration    String
+
+  @@map("sessions")
+}
+
+model Interactions{
+  id            String @id @default(cuid())
+  elementId     String
+  elementType   String
+  interaction   String
+  time          DateTime
+
+  @@map("interactions")
+}
