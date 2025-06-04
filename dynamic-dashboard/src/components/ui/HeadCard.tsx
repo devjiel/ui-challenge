@@ -1,19 +1,20 @@
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye } from "lucide-react"
 
-export default function HeadCard({ title, value }: { title: string, value?: string }) {
+export default function HeadCard({ title, footer, cardAction, value }: { title: string, footer: string, cardAction?: React.ReactNode, value?: string }) {
 
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>{title}</CardTitle>
-                <CardAction>
-                    <Eye className="w-4 h-4 text-muted-foreground" />
-                </CardAction>
+                {cardAction && (
+                    <CardAction className="text-muted-foreground">
+                        {cardAction}
+                    </CardAction>
+                )}
             </CardHeader>
             <CardContent className="">
                 <p className="text-2xl font-bold">{value || "..."}</p>
-                <p className="text-sm text-muted-foreground">Updated in real-time</p>
+                <p className="text-sm text-muted-foreground">{footer}</p>
             </CardContent>
         </Card>
     )
