@@ -1,6 +1,7 @@
 import Header from "@/components/layout/Header";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import HeadCard from "@/components/ui/HeadCard";
+import PageViewTable from "@/components/ui/tables/PageViewCard";
 
 import {
   Tabs,
@@ -28,11 +29,7 @@ export default function Home() {
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
           </TabsList>
           <TabsContent value="page-views">
-            <Card>
-              <CardHeader>
-                <CardTitle>Page Views</CardTitle>
-              </CardHeader>
-            </Card>
+            <PageViewTable />
           </TabsContent>
           <TabsContent value="sessions">
             <Card>
