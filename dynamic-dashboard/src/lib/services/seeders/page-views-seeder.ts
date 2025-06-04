@@ -1,3 +1,4 @@
+import { getPageViewsCount } from "@/lib/db/queries/page-views";
 import { createPageView } from "../../db/mutations/page-views";
 
 class PageViewsSeeder {
@@ -99,6 +100,12 @@ class PageViewsSeeder {
 
     async seed() {
         try {
+            const count = await getPageViewsCount()
+            if (count >= 1000) {
+                this.stop()
+                return
+            }
+
             const randomIndex = Math.floor(Math.random() * this.values.length)
             const value = this.values[randomIndex]
             await createPageView(value.pageUrl, value.pageTitle, value.referrer, value.viewedAt)

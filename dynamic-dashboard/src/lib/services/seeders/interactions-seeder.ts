@@ -1,3 +1,4 @@
+import { getInteractionsCount } from "@/lib/db/queries/interactions";
 import { createInteraction } from "../../db/mutations/interactions";
 
 class InteractionsSeeder {
@@ -81,6 +82,12 @@ class InteractionsSeeder {
 
     async seed() {
         try {
+            const count = await getInteractionsCount()
+            if (count >= 1000) {
+                this.stop()
+                return
+            }
+
             const randomIndex = Math.floor(Math.random() * this.values.length)
             const value = this.values[randomIndex]
             await createInteraction(value.elementId, value.elementType, value.interaction, value.time)

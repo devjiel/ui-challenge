@@ -1,4 +1,5 @@
 import { createSession } from "../../db/mutations/sessions";
+import { getPageSessionsCount } from "../../db/queries/sessions";
 
 class SessionsSeeder {
     private interval: NodeJS.Timeout | null = null
@@ -93,6 +94,12 @@ class SessionsSeeder {
 
     async seed() {
         try {
+            const count = await getPageSessionsCount()
+            if (count >= 1000) {
+                this.stop()
+                return
+            }
+
             const randomIndex = Math.floor(Math.random() * this.values.length)
             const value = this.values[randomIndex]
             await createSession(value.sessionId, value.userId, value.startedAt, value.duration)
