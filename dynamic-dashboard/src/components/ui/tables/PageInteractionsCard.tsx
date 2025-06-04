@@ -2,67 +2,18 @@ import { Card, CardDescription, CardTitle } from "../card";
 import { CardContent } from "../card";
 import { CardHeader } from "../card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-
-const values = [
-    {
-        id: 1,
-        elementId: "cta-button",
-        elementType: "input",
-        interaction: "submit",
-        time: "2025-04-10 17:32:00",
-    },
-    {
-        id: 2,
-        elementId: "newsletter-signup",
-        elementType: "button",
-        interaction: "hover",
-        time: "2025-04-10 17:32:01",
-    },
-    {
-        id: 3,
-        elementId: "menu-toggle",
-        elementType: "button",
-        interaction: "submit",
-        time: "2025-04-10 17:32:02",
-    },
-    {
-        id: 4,
-        elementId: "menu_toggle",
-        elementType: "button",
-        interaction: "submit",
-        time: "2025-04-10 17:32:03",
-    },
-    {
-        id: 5,
-        elementId: "search-input",
-        elementType: "input",
-        interaction: "submit",
-        time: "2025-04-10 17:32:04",
-    },
-    {
-        id: 6,
-        elementId: "signup-button",
-        elementType: "button",
-        interaction: "click",
-        time: "2025-04-10 17:32:05",
-    },
-    {
-        id: 7,
-        elementId: "login-button",
-        elementType: "button",
-        interaction: "click",
-        time: "2025-04-10 17:32:06",
-    },
-    {
-        id: 8,
-        elementId: "newsletter-signup",
-        elementType: "button",
-        interaction: "hover",
-        time: "2025-04-10 17:32:07",
-    }
-]
+import { useEffect, useState } from "react";
+import { Interactions } from "@prisma/client";
 
 export default function PageInteractionsCard() {
+    const [interactions, setInteractions] = useState<Interactions[]>([])
+
+    useEffect(() => {
+        fetch('/api/interactions')
+            .then(response => response.json())
+            .then(data => setInteractions(data))
+            .catch(error => console.error('Error fetching interactions:', error))
+    }, [])
     return (
         <Card>
             <CardHeader>
@@ -84,12 +35,12 @@ export default function PageInteractionsCard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {values.map((value) => (
-                            <TableRow key={value.id}>
-                                <TableCell>{value.elementId}</TableCell>
-                                <TableCell>{value.elementType}</TableCell>
-                                <TableCell>{value.interaction}</TableCell>
-                                <TableCell>{value.time}</TableCell>
+                        {interactions.map((interaction) => (
+                            <TableRow key={interaction.id}>
+                                <TableCell>{interaction.elementId}</TableCell>
+                                <TableCell>{interaction.elementType}</TableCell>
+                                <TableCell>{interaction.interaction}</TableCell>
+                                <TableCell>{interaction.time.toLocaleString()}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
