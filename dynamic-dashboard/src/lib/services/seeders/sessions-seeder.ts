@@ -1,5 +1,5 @@
 import { createSession } from "../../db/mutations/sessions";
-import { getPageSessionsCount } from "../../db/queries/sessions";
+import { getSessionsCount } from "../../db/queries/sessions";
 
 class SessionsSeeder {
     private interval: NodeJS.Timeout | null = null
@@ -94,7 +94,7 @@ class SessionsSeeder {
 
     async seed() {
         try {
-            const count = await getPageSessionsCount()
+            const count = await getSessionsCount()
             if (count >= 100) {
                 this.stop()
                 return

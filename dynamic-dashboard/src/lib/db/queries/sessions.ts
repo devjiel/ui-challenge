@@ -6,7 +6,7 @@ export async function getSessions() : Promise<Session[]> {
   return sessions;
 }
 
-export async function getPageSessionsCount() {
-  const pageSessions = await prisma.session.count();
-  return pageSessions;
+export async function getSessionsCount() {
+  const sessions = await prisma.session.count();
+  return sessions;
 }
