@@ -2,17 +2,10 @@ import Header from "@/components/layout/Header";
 import PageViewCard from "@/components/ui/PageViewCard";
 import SessionCard from "@/components/ui/SessionCard";
 import InteractionCard from "@/components/ui/InteractionCard";
+import DashboardTabs from "@/components/layout/DashboardTabs";
 import PageViewTable from "@/components/ui/tables/PageViewsCard";
 import PageSessionsCard from "@/components/ui/tables/PageSessionsCard";
 import PageInteractionsCard from "@/components/ui/tables/PageInteractionsCard";
-
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-
 
 export default async function Home() {
 
@@ -26,22 +19,7 @@ export default async function Home() {
           <InteractionCard />
           <PageViewCard />
         </div>
-        <Tabs defaultValue="page-views" className="w-full flex flex-col gap-6">
-          <TabsList>
-            <TabsTrigger value="page-views">Page Views</TabsTrigger>
-            <TabsTrigger value="sessions">Sessions</TabsTrigger>
-            <TabsTrigger value="interactions">Interactions</TabsTrigger>
-          </TabsList>
-          <TabsContent value="page-views">
-            <PageViewTable />
-          </TabsContent>
-          <TabsContent value="sessions">
-            <PageSessionsCard />
-          </TabsContent>
-          <TabsContent value="interactions">
-            <PageInteractionsCard />
-          </TabsContent>
-        </Tabs>
+        <DashboardTabs pageViews={<PageViewTable />} sessions={<PageSessionsCard />} interactions={<PageInteractionsCard />} />
       </main>
     </div>
   );
