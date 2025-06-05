@@ -1,4 +1,3 @@
-'use client'
 
 import Header from "@/components/layout/Header";
 import HeadCard from "@/components/ui/HeadCard";
@@ -13,16 +12,12 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { Activity, Clock4, Eye, Users } from "lucide-react";
-import { useEffect } from "react";
+import { seederManager } from "@/lib/services/seeder-manager";
 
 
-export default function Home() {
-  useEffect(() => {
-    fetch('/api/seed')
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error('Error seeding:', error))
-  }, [])
+export default async function Home() {
+
+  await seederManager.initialize()
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -2,18 +2,10 @@ import { Card, CardDescription, CardTitle } from "../card";
 import { CardContent } from "../card";
 import { CardHeader } from "../card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { useEffect, useState } from "react";
-import { PageSession } from "@prisma/client";
+import { getSessions } from "@/lib/db/queries/sessions";
 
-export default function PageSessionsCard() {
-    const [pageSessions, setPageSessions] = useState<PageSession[]>([])
-
-    useEffect(() => {
-        fetch('/api/sessions')
-            .then(response => response.json())
-            .then(data => setPageSessions(data))
-            .catch(error => console.error('Error fetching page sessions:', error))
-    }, [])
+export default async function PageSessionsCard() {
+    const pageSessions = await getSessions()
 
     return (
         <Card>

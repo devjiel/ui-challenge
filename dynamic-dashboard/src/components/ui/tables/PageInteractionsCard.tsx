@@ -1,19 +1,13 @@
+import { getInteractions } from "@/lib/db/queries/interactions";
 import { Card, CardDescription, CardTitle } from "../card";
 import { CardContent } from "../card";
 import { CardHeader } from "../card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { useEffect, useState } from "react";
 import { Interactions } from "@prisma/client";
 
-export default function PageInteractionsCard() {
-    const [interactions, setInteractions] = useState<Interactions[]>([])
+export default async function PageInteractionsCard() {
+    const interactions = await getInteractions()
 
-    useEffect(() => {
-        fetch('/api/interactions')
-            .then(response => response.json())
-            .then(data => setInteractions(data))
-            .catch(error => console.error('Error fetching interactions:', error))
-    }, [])
     return (
         <Card>
             <CardHeader>

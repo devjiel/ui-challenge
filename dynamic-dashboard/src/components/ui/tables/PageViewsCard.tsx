@@ -2,18 +2,11 @@ import { Card, CardDescription, CardTitle } from "../card";
 import { CardContent } from "../card";
 import { CardHeader } from "../card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { useEffect, useState } from "react";
-import { PageView } from "@prisma/client";
+import { getPageViews } from "@/lib/db/queries/page-views";
 
-export default function PageViewTable() {
-    const [pageViews, setPageViews] = useState<PageView[]>([])
+export default async function PageViewTable() {
+    const pageViews = await getPageViews()
 
-    useEffect(() => {
-        fetch('/api/page-views')
-            .then(response => response.json())
-            .then(data => setPageViews(data))
-            .catch(error => console.error('Error fetching page views:', error))
-    }, [])
     return (
         <Card>
             <CardHeader>
