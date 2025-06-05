@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { PageView } from "@/lib/prisma";
 
-export async function getPageViews() {
+export async function getPageViews() : Promise<PageView[]> {
   const pageViews = await prisma.pageView.findMany();
   return pageViews;
 }

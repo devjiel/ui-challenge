@@ -8,4 +8,4 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-export type { PageViews, Sessions, Interactions } from '@prisma/client'
+export type { PageView, Session, Interaction } from '@prisma/client'

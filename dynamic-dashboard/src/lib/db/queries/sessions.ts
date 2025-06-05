@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { Session } from "@/lib/prisma";
 
-export async function getSessions() {
-  const pageSessions = await prisma.pageSession.findMany();
-  return pageSessions;
+export async function getSessions() : Promise<Session[]> {
+  const sessions = await prisma.session.findMany();
+  return sessions;
 }
 
 export async function getPageSessionsCount() {
-  const pageSessions = await prisma.pageSession.count();
+  const pageSessions = await prisma.session.count();
   return pageSessions;
 }

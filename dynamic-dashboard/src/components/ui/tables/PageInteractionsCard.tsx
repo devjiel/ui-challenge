@@ -3,7 +3,6 @@ import { Card, CardDescription, CardTitle } from "../card";
 import { CardContent } from "../card";
 import { CardHeader } from "../card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Interactions } from "@prisma/client";
 
 export default async function PageInteractionsCard() {
     const interactions = await getInteractions()

@@ -20,7 +20,7 @@ model PageView {
   @@map("page_views")
 }
 
-model PageSession{
+model Session {
   id          String @id @default(cuid())
   sessionId   String
   userId      String
@@ -30,7 +30,7 @@ model PageSession{
   @@map("sessions")
 }
 
-model Interactions{
+model Interaction {
   id            String @id @default(cuid())
   elementId     String
   elementType   String
